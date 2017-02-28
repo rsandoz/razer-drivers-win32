@@ -164,13 +164,14 @@ inline void hid_err(struct hid_device *hdev, const char* msg, ...) {
 
 
 inline void openChromaDevice(struct hid_device** hdev, unsigned int* numHdev, struct hid_driver hdr) {
-	HDEVINFO hDevInfo = SetupDiGetClassDevs(&GUID_DEVINTERFACE, 0, 0, DIGCF_DEVICEINTERFACE);
-    if (hDevInfo == INVALID_HANDLE_VALUE) {
-		printf("SetupDiGetClassDevs failed\n");
-		return;
-	}
 
 	for (unsigned int  i = 0; hdr.id_table[i].vendor != 0; i++) {
+		HDEVINFO hDevInfo = SetupDiGetClassDevs(&GUID_DEVINTERFACE, 0, 0, DIGCF_DEVICEINTERFACE);
+		if (hDevInfo == INVALID_HANDLE_VALUE) {
+			printf("SetupDiGetClassDevs failed\n");
+			return;
+		}
+
 		SP_DEVINFO_DATA deviceData = { 0 };
 		deviceData.cbSize = sizeof(SP_DEVINFO_DATA);
 
