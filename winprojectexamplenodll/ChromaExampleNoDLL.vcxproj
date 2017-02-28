@@ -125,25 +125,25 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\razerchromacommon.c" />
-    <ClCompile Include="..\..\razercommon.c" />
-    <ClCompile Include="..\..\razercore_driver.c" />
-    <ClCompile Include="..\..\razerfirefly_driver.c" />
-    <ClCompile Include="..\..\razerkbd_driver.c" />
-    <ClCompile Include="..\..\razerkraken_driver.c" />
-    <ClCompile Include="..\..\razermouse_driver.c" />
-    <ClCompile Include="..\..\razermug_driver.c" />
+    <ClCompile Include="..\..\driver\razerchromacommon.c" />
+    <ClCompile Include="..\..\driver\razercommon.c" />
+    <ClCompile Include="..\..\driver\razercore_driver.c" />
+    <ClCompile Include="..\..\driver\razerfirefly_driver.c" />
+    <ClCompile Include="..\..\driver\razerkbd_driver.c" />
+    <ClCompile Include="..\..\driver\razerkraken_driver.c" />
+    <ClCompile Include="..\..\driver\razermouse_driver.c" />
+    <ClCompile Include="..\..\driver\razermug_driver.c" />
     <ClCompile Include="..\winprojectexampledll\main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\razerchromacommon.h" />
-    <ClInclude Include="..\..\razercommon.h" />
-    <ClInclude Include="..\..\razercore_driver.h" />
-    <ClInclude Include="..\..\razerfirefly_driver.h" />
-    <ClInclude Include="..\..\razerkbd_driver.h" />
-    <ClInclude Include="..\..\razerkraken_driver.h" />
-    <ClInclude Include="..\..\razermouse_driver.h" />
-    <ClInclude Include="..\..\razermug_driver.h" />
+    <ClInclude Include="..\..\driver\razerchromacommon.h" />
+    <ClInclude Include="..\..\driver\razercommon.h" />
+    <ClInclude Include="..\..\driver\razercore_driver.h" />
+    <ClInclude Include="..\..\driver\razerfirefly_driver.h" />
+    <ClInclude Include="..\..\driver\razerkbd_driver.h" />
+    <ClInclude Include="..\..\driver\razerkraken_driver.h" />
+    <ClInclude Include="..\..\driver\razermouse_driver.h" />
+    <ClInclude Include="..\..\driver\razermug_driver.h" />
     <ClInclude Include="defines.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
