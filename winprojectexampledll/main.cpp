@@ -379,11 +379,6 @@ static void colorize(std::set<struct device*> devices, unsigned int maxRow, unsi
 	for (struct device* device : devices) {
 		switch (device->parent->descriptor.idProduct) {
 			case USB_DEVICE_ID_RAZER_ANANSI:
-			case USB_DEVICE_ID_RAZER_DEATHSTALKER_ULTIMATE:
-			case USB_DEVICE_ID_RAZER_NAGA_EPIC_WIRED:
-			case USB_DEVICE_ID_RAZER_NAGA_EPIC_WIRELESS:
-			case USB_DEVICE_ID_RAZER_OROCHI_2013:
-			case USB_DEVICE_ID_RAZER_BLADE_2015:
 				break;
 			default:
 				for (unsigned int row = 0; row < maxRow; row++) {
@@ -537,26 +532,12 @@ int main(int argc, char **argv) {
 	printf("\n");
 
 	for (struct device* device : deviceKeyboards) 
-		switch (device->parent->descriptor.idProduct) {
-			case USB_DEVICE_ID_RAZER_BLADE_2015:
-				break;
-			default:
-				staticEffect(device, RGB(0xFF,0xFF,0xFF), devkbd_attr_matrix_effect_static);
-				break;
-		}
+		staticEffect(device, RGB(0xFF,0xFF,0xFF), devkbd_attr_matrix_effect_static);
 	for (struct device* device : deviceMice)
 		switch (device->parent->descriptor.idProduct) {
 			case USB_DEVICE_ID_RAZER_DEATHADDER_ELITE:
 				staticEffect(device, RGB(0xFF,0xFF,0xFF), devmouse_attr_logo_matrix_effect_static);
 				staticEffect(device, RGB(0xFF,0xFF,0xFF), devmouse_attr_scroll_matrix_effect_static);
-				break;
-			case USB_DEVICE_ID_RAZER_NAGA_EPIC_WIRED:
-			case USB_DEVICE_ID_RAZER_NAGA_EPIC_WIRELESS:
-				devmouse_attr_scroll_led_effect.store(device, NULL, "0", strlen("0")-1);
-				devmouse_attr_scroll_led_rgb.store(device, NULL, "\xFF\xFF\xFF", 3);
-				break;
-			case USB_DEVICE_ID_RAZER_OROCHI_2013:
-				devmouse_attr_scroll_led_state.store(device, NULL, "1", 1);
 				break;
 			default:
 				staticEffect(device, RGB(0xFF,0xFF,0xFF), devmouse_attr_matrix_effect_static);
@@ -584,12 +565,6 @@ int main(int argc, char **argv) {
 					devmouse_attr_logo_led_brightness.store(device, NULL, testBrightness[i], strlen(testBrightness[i])-1);
 					devmouse_attr_scroll_led_brightness.store(device, NULL, testBrightness[i], strlen(testBrightness[i])-1);
 					break;
-				case USB_DEVICE_ID_RAZER_NAGA_EPIC_WIRED:
-				case USB_DEVICE_ID_RAZER_NAGA_EPIC_WIRELESS:
-					devmouse_attr_scroll_led_brightness.store(device, NULL, testBrightness[i], strlen(testBrightness[i])-1);
-					break;
-				case USB_DEVICE_ID_RAZER_OROCHI_2013:
-					break;
 				default:
 					devmouse_attr_matrix_brightness.store(device, NULL, testBrightness[i], strlen(testBrightness[i])-1);
 					break;
@@ -609,26 +584,12 @@ int main(int argc, char **argv) {
 	printf("\n");
 
 	for (struct device* device : deviceKeyboards) 
-		switch (device->parent->descriptor.idProduct) {
-			case USB_DEVICE_ID_RAZER_BLADE_2015:
-				break;
-			default:
-				devkbd_attr_matrix_effect_none.store(device, NULL, 0, 0);
-				break;
-		}
+		devkbd_attr_matrix_effect_none.store(device, NULL, 0, 0);
 	for (struct device* device : deviceMice)
 		switch (device->parent->descriptor.idProduct) {
-			case USB_DEVICE_ID_RAZER_NAGA_EPIC_WIRED:
-			case USB_DEVICE_ID_RAZER_NAGA_EPIC_WIRELESS:
-				devmouse_attr_scroll_led_effect.store(device, NULL, "0", strlen("0")-1);
-				devmouse_attr_scroll_led_rgb.store(device, NULL, "\x00\x00\x00", 3);
-				break;
 			case USB_DEVICE_ID_RAZER_DEATHADDER_ELITE:
 				devmouse_attr_logo_matrix_effect_none.store(device, NULL, 0, 0);
 				devmouse_attr_scroll_matrix_effect_none.store(device, NULL, 0, 0);
-				break;
-			case USB_DEVICE_ID_RAZER_OROCHI_2013:
-				devmouse_attr_scroll_led_state.store(device, NULL, "0", 1);
 				break;
 			default:
 				devmouse_attr_matrix_effect_none.store(device, NULL, 0, 0);
@@ -648,24 +609,12 @@ int main(int argc, char **argv) {
 	printf("\n");
 
 	for (struct device* device : deviceKeyboards) 
-		switch (device->parent->descriptor.idProduct) {
-			case USB_DEVICE_ID_RAZER_BLADE_2015:
-				break;
-			default:
-				devkbd_attr_matrix_effect_spectrum.store(device, NULL, 0, 0);
-				break;
-		}
+		devkbd_attr_matrix_effect_spectrum.store(device, NULL, 0, 0);
 	for (struct device* device : deviceMice) 
 		switch (device->parent->descriptor.idProduct) {
-			case USB_DEVICE_ID_RAZER_NAGA_EPIC_WIRED:
-			case USB_DEVICE_ID_RAZER_NAGA_EPIC_WIRELESS:
-				devmouse_attr_scroll_led_effect.store(device, NULL, "4", strlen("4")-1);
-				break;
 			case USB_DEVICE_ID_RAZER_DEATHADDER_ELITE:
 				devmouse_attr_logo_matrix_effect_spectrum.store(device, NULL, 0, 0);
 				devmouse_attr_scroll_matrix_effect_spectrum.store(device, NULL, 0, 0);
-				break;
-			case USB_DEVICE_ID_RAZER_OROCHI_2013:
 				break;
 			default:
 				devmouse_attr_matrix_effect_spectrum.store(device, NULL, 0, 0);
@@ -686,20 +635,9 @@ int main(int argc, char **argv) {
 
 	for (int i = 0; i < _countof(testReactive); i++) {
 		for (struct device* device : deviceKeyboards) 
-			switch (device->parent->descriptor.idProduct) {
-				case USB_DEVICE_ID_RAZER_BLADE_2015:
-				case USB_DEVICE_ID_RAZER_DEATHSTALKER_ULTIMATE:
-					break;
-				default:
-					devkbd_attr_matrix_effect_reactive.store(device, NULL, testReactive[i], 4);
-					break;
-			}
+			devkbd_attr_matrix_effect_reactive.store(device, NULL, testReactive[i], 4);
 		for (struct device* device : deviceMice) 
 			switch (device->parent->descriptor.idProduct) {
-				case USB_DEVICE_ID_RAZER_NAGA_EPIC_WIRED:
-				case USB_DEVICE_ID_RAZER_NAGA_EPIC_WIRELESS:
-				case USB_DEVICE_ID_RAZER_OROCHI_2013:
-					break;
 				case USB_DEVICE_ID_RAZER_DEATHADDER_ELITE:
 					devmouse_attr_logo_matrix_effect_reactive.store(device, NULL, testReactive[i], 4);
 					devmouse_attr_scroll_matrix_effect_reactive.store(device, NULL, testReactive[i], 4);
@@ -724,26 +662,12 @@ int main(int argc, char **argv) {
 
 	for (int i = 0; i < _countof(testColor); i++) {
 		for (struct device* device : deviceKeyboards) 
-			switch (device->parent->descriptor.idProduct) {
-				case USB_DEVICE_ID_RAZER_BLADE_2015:
-					break;
-				default:
-					staticEffect(device, testColor[i], devkbd_attr_matrix_effect_static);
-					break;
-			}
+			staticEffect(device, testColor[i], devkbd_attr_matrix_effect_static);
 		for (struct device* device : deviceMice) 
 			switch (device->parent->descriptor.idProduct) {
-				case USB_DEVICE_ID_RAZER_NAGA_EPIC_WIRED:
-				case USB_DEVICE_ID_RAZER_NAGA_EPIC_WIRELESS:
-					devmouse_attr_scroll_led_effect.store(device, NULL, "0", strlen("0")-1);
-					staticEffect(device, testColor[i], devmouse_attr_scroll_led_rgb);
-					break;
 				case USB_DEVICE_ID_RAZER_DEATHADDER_ELITE:
 					staticEffect(device, testColor[i], devmouse_attr_logo_matrix_effect_static);
 					staticEffect(device, testColor[i], devmouse_attr_scroll_matrix_effect_static);
-					break;
-				case USB_DEVICE_ID_RAZER_OROCHI_2013:
-					devmouse_attr_scroll_led_state.store(device, NULL, "1", 1); // it can only be green
 					break;
 				default:
 					staticEffect(device, testColor[i], devmouse_attr_matrix_effect_static);
