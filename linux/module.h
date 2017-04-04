@@ -29,10 +29,19 @@ struct usb_host_interface {
 	struct usb_interface_descriptor desc;
 };
 
+struct device {
+	struct device					*parent;
+	void							*p;
+	const char						*init_name;
+	void							*driver_data;
+struct usb_interface *parent_usb_interface;
+};
+
 struct usb_interface {
+	struct device* dev;
     int num_altsetting;
-	struct usb_device* dev;
 	struct usb_host_interface *cur_altsetting;
+struct usb_device *parent_usb_device;
 };
 
 struct usb_device_descriptor {
@@ -41,8 +50,7 @@ struct usb_device_descriptor {
 };
 
 struct usb_device {
-    char filename[PATH_MAX];
-	void *dev;
+	struct device* dev;
     struct usb_device_descriptor descriptor;
 };
 
@@ -63,21 +71,24 @@ inline int usb_control_msg(
 	packet.Index = report_index; 
 	packet.Length = size;
 	ULONG cbSent = 0;
-	if (!WinUsb_ControlTransfer(usb_dev->dev, packet, buf, size, &cbSent, 0))
-		printf("\tfailed\tWinUsb_ControlTransfer\n\n");
+	if (!WinUsb_ControlTransfer(usb_dev->dev->p, packet, buf, size, &cbSent, 0))
+		printf("WinUsb_ControlTransfer failed\n");
 
 	return cbSent;
 }
 
-inline struct usb_interface *to_usb_interface(struct usb_device *parent) {
-//	parent->config->interface->dev = parent;
-//	return parent->config->interface;
-	return (struct usb_interface*)parent;
+
+
+inline struct usb_interface *to_usb_interface(struct device *dev) {
+	return dev->parent_usb_interface;
+}
+
+inline struct usb_device *to_usb_device(struct device *dev) {
+	return dev->parent_usb_interface->parent_usb_device;
 }
 
 inline struct usb_device *interface_to_usbdev(struct usb_interface *intf) {
-//	return intf->dev;
-	return (struct usb_device*)intf;
+	return to_usb_device(intf->dev->parent);
 }
 
 inline void usb_disable_autosuspend(struct usb_device *usb_dev) {

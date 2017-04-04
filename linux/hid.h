@@ -47,7 +47,6 @@ struct hid_driver {
 	int (*event)(struct hid_device *hdev, struct hid_field *field, struct hid_usage *usage, __s32 value);
 	int (*input_configured)(struct hid_device *hdev,
 					struct hid_input *hidinput);
-
 	int (*input_mapping)(struct hid_device *hdev,
 					struct hid_input *hidinput, struct hid_field *field,
 					struct hid_usage *usage, unsigned long **bit, int *max);
@@ -59,22 +58,10 @@ struct hid_device_id {
 	__u32 product;
 };
 
-struct device_private {
-	struct usb_dev_handle*	udev;
-	void*					hPipe;
-};
-
-struct device {
-	struct usb_device				*parent;
-	struct device_private			p;
-	const char						*init_name;
-	void							*driver_data;
-};
-
-struct hid_device {                                                     /* device report descriptor */
-	struct device dev;                                              /* device */
+struct hid_device {
+	struct device dev;
 	struct hid_ll_driver *ll_driver;
-	unsigned int status;                                            /* see STAT flags above */
+	unsigned int status;
 	struct hid_driver *driver;
 };
 
@@ -98,12 +85,12 @@ inline int ll_parse(struct hid_device *hdev) {
 	return 0;
 }
 
-inline void dev_err(struct usb_device** dev, const char* msg) {
-//	printf("dev_err device=%s msg=%s", (*dev)->filename, msg);
+inline void dev_err(struct device** dev, const char* msg) {
+	printf("dev_err device=%s msg=%s", (*dev)->init_name, msg);
 }
 
-inline void dev_info(struct usb_device** dev, const char* msg) {
-//	printf("dev_info device=%s msg=%s", (*dev)->filename, msg);
+inline void dev_info(struct device** dev, const char* msg) {
+	printf("dev_err device=%s msg=%s", (*dev)->init_name, msg);
 }
 
 inline void *dev_get_drvdata(const struct device *dev) {
@@ -162,6 +149,20 @@ inline void hid_err(struct hid_device *hdev, const char* msg, ...) {
 	va_end(args);
 }
 
+#define container_of(ptr, type, member) (type*)((char*)(ptr)-(char*)&((type *)0)->member)
+
+inline void close(struct device* dev) {
+	printf("close %04X\n", (to_usb_device(dev))->descriptor.idProduct);
+	struct usb_interface *intf = to_usb_interface(dev->parent);
+	struct usb_device *usb_dev = interface_to_usbdev(intf);
+	struct hid_device *hdev = container_of(dev, struct hid_device, dev);
+	free(hdev->ll_driver);
+	free(usb_dev);
+	free(intf->cur_altsetting);
+	free(intf);
+	free(hdev);
+	//TODO:cleanup malloc memory, move this function into DLL
+}
 
 inline void openChromaDevice(struct hid_device** hdev, unsigned int* numHdev, struct hid_driver hdr) {
 
@@ -187,13 +188,6 @@ inline void openChromaDevice(struct hid_device** hdev, unsigned int* numHdev, st
 			char* pid = strstr(deviceID, "PID_");
 			if (!pid || hdr.id_table[i].product != strtoul(pid+4, NULL, 16))
 				continue;
-
-			/*char* mi = strstr(deviceID, "MI_");
-			if (mi) {
-				printf("vid found (%s)\n", vid+4);
-				printf("pid found (%s)\n", pid+4);
-				printf("mi found (%s)\n", mi+3);
-			}*/
 
 			SP_INTERFACE_DEVICE_DATA interfaceData = { 0 };
 			interfaceData.cbSize = sizeof(SP_INTERFACE_DEVICE_DATA);
@@ -236,14 +230,34 @@ inline void openChromaDevice(struct hid_device** hdev, unsigned int* numHdev, st
 				continue;
 			}
 
-			(*hdev)[*numHdev].dev.parent = (struct usb_device*)malloc(sizeof(struct usb_device));
-			(*hdev)[*numHdev].dev.parent->descriptor.idVendor = hdr.id_table[i].vendor;
-			(*hdev)[*numHdev].dev.parent->descriptor.idProduct = hdr.id_table[i].product;
-			(*hdev)[*numHdev].dev.parent->filename;
-			(*hdev)[*numHdev].dev.parent->dev = hWinUSBHandle; // use this for the handle
+			struct usb_interface* intf = (struct usb_interface*)malloc(sizeof(struct usb_interface));
+			intf->cur_altsetting = (struct usb_host_interface*)malloc(sizeof(struct usb_host_interface));
+			intf->cur_altsetting->desc.bInterfaceProtocol = 0;
+
+			struct usb_device *usbdevice = (struct usb_device*)malloc(sizeof(struct usb_device));
+			usbdevice->descriptor.idVendor = hdr.id_table[i].vendor;
+			usbdevice->descriptor.idProduct = hdr.id_table[i].product;
+
+			intf->parent_usb_device = usbdevice;
+
+			(*hdev)[*numHdev].dev.parent = &((*hdev)[*numHdev].dev);
+			(*hdev)[*numHdev].dev.driver_data;
+			(*hdev)[*numHdev].dev.p = hWinUSBHandle;
+			(*hdev)[*numHdev].dev.parent_usb_interface = intf;
 			(*hdev)[*numHdev].dev.init_name = hdr.name;
-			(*hdev)[*numHdev].status = 1;
+
+			usbdevice->dev = &((*hdev)[*numHdev].dev);
+			intf->dev = &((*hdev)[*numHdev].dev);
+
+
+			(*hdev)[*numHdev].status = 2;
 			(*hdev)[*numHdev].driver = &hdr;
+			(*hdev)[*numHdev].ll_driver = (struct hid_ll_driver*)malloc(sizeof(struct hid_ll_driver));
+			(*hdev)[*numHdev].ll_driver->parse = ll_parse;
+			(*hdev)[*numHdev].ll_driver->start = ll_start;
+			(*hdev)[*numHdev].ll_driver->stop = ll_stop;
+
+			(*hdev)[*numHdev].driver->probe(&((*hdev)[*numHdev]), &(hdr.id_table[i]));
 
 			(*numHdev)++;
 		}
