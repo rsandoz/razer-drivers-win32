@@ -249,6 +249,17 @@ inline void openChromaDevice(struct hid_device** hdev, unsigned int* numHdev, st
 				continue;
 			}
 
+			if (*numHdev > 0)
+			{
+				//Copy old hdev into new buffer, correcting all pointers to their new locations
+				for (int old_dev = 0; old_dev < *numHdev; old_dev++)
+				{
+					(*hdev)[old_dev].dev.parent = &((*hdev)[old_dev].dev);
+					(*hdev)[old_dev].dev.parent_usb_interface->dev = &((*hdev)[old_dev].dev);
+					(*hdev)[old_dev].dev.parent_usb_interface->parent_usb_device->dev = &((*hdev)[old_dev].dev);
+				}
+			}
+
 			struct usb_interface* intf = (struct usb_interface*)malloc(sizeof(struct usb_interface));
 			intf->cur_altsetting = (struct usb_host_interface*)malloc(sizeof(struct usb_host_interface));
 			intf->cur_altsetting->desc.bInterfaceProtocol = 0;
@@ -259,6 +270,7 @@ inline void openChromaDevice(struct hid_device** hdev, unsigned int* numHdev, st
 
 			intf->parent_usb_device = usbdevice;
 
+			(*hdev)[*numHdev].product = hdr.id_table[i].product;
 			(*hdev)[*numHdev].dev.parent = &((*hdev)[*numHdev].dev);
 			(*hdev)[*numHdev].dev.driver_data;
 			(*hdev)[*numHdev].dev.p = hWinUSBHandle;

@@ -137,9 +137,9 @@ static DEVICE_ATTR(matrix_effect_breath,    0660, razer_attr_read_mode_breath,  
 #define DEVICE_ATTR(_name, _mode, _show, _store) DEVICE_ATTR1(kraken, _name, _mode, _show, _store)
 module_hid_driverh(razer_kraken_driver);
 
-#include "razerfirefly_driver.h"
+#include "razermousemat_driver.h"
 #undef DEVICE_ATTR
-#define DEVICE_ATTR(_name, _mode, _show, _store) DEVICE_ATTRH1(firefly, _name, _mode, _show, _store)
+#define DEVICE_ATTR(_name, _mode, _show, _store) DEVICE_ATTRH1(mousemat, _name, _mode, _show, _store)
 static DEVICE_ATTR(firmware_version,        0440, razer_attr_read_get_firmware_version, NULL);
 static DEVICE_ATTR(device_type,             0440, razer_attr_read_device_type,          NULL);
 static DEVICE_ATTR(device_serial,           0440, razer_attr_read_get_serial,           NULL);
@@ -155,12 +155,12 @@ static DEVICE_ATTR(matrix_effect_custom,    0220, NULL,                         
 static DEVICE_ATTR(matrix_effect_static,    0220, NULL,                                 razer_attr_write_mode_static);
 static DEVICE_ATTR(matrix_custom_frame,     0220, NULL,                                 razer_attr_write_set_key_row);
 #undef DEVICE_ATTR
-#define DEVICE_ATTR(_name, _mode, _show, _store) DEVICE_ATTR1(firefly, _name, _mode, _show, _store)
-module_hid_driverh(razer_firefly_driver);
+#define DEVICE_ATTR(_name, _mode, _show, _store) DEVICE_ATTR1(mousemat, _name, _mode, _show, _store)
+module_hid_driverh(razer_mousemat_driver);
 
-#include "razermug_driver.h"
+#include "razeraccessory_driver.h"
 #undef DEVICE_ATTR
-#define DEVICE_ATTR(_name, _mode, _show, _store) DEVICE_ATTRH1(mug, _name, _mode, _show, _store)
+#define DEVICE_ATTR(_name, _mode, _show, _store) DEVICE_ATTRH1(accessory, _name, _mode, _show, _store)
 static DEVICE_ATTR(test,                    0660, razer_attr_read_test,                       razer_attr_write_test);
 static DEVICE_ATTR(version,                 0440, razer_attr_read_version,                    NULL);
 static DEVICE_ATTR(device_type,             0440, razer_attr_read_device_type,                NULL);
@@ -180,8 +180,8 @@ static DEVICE_ATTR(matrix_custom_frame,     0220, NULL,                         
 
 static DEVICE_ATTR(is_mug_present,          0440, razer_attr_read_get_cup_state,              NULL);
 #undef DEVICE_ATTR
-#define DEVICE_ATTR(_name, _mode, _show, _store) DEVICE_ATTR1(mug, _name, _mode, _show, _store)
-module_hid_driverh(razer_mug_driver);
+#define DEVICE_ATTR(_name, _mode, _show, _store) DEVICE_ATTR1(accessory, _name, _mode, _show, _store)
+module_hid_driverh(razer_accessory_driver);
 
 #include "razercore_driver.h"
 #undef DEVICE_ATTR
@@ -397,7 +397,7 @@ static void colorize(std::set<struct device*> devices, unsigned int maxRow, unsi
 	}
 	delete[] buf;
 }
-
+static	std::set<struct device*> deviceFireflies;
 int main(int argc, char **argv) {
 #ifndef DLL_INTERNAL
 	printf("Press enter to load DLL...");
@@ -486,7 +486,7 @@ int main(int argc, char **argv) {
 	unsigned int num;
 
 	hdev = NULL;
-	std::set<struct device*> deviceFireflies;
+
 	num = init_razer_mousemat_driver(&hdev);
     for (unsigned int i = 0; i < num; i++)
     {

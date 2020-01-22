@@ -125,25 +125,25 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\driver\razeraccessory_driver.c" />
     <ClCompile Include="..\..\driver\razerchromacommon.c" />
     <ClCompile Include="..\..\driver\razercommon.c" />
     <ClCompile Include="..\..\driver\razercore_driver.c" />
-    <ClCompile Include="..\..\driver\razerfirefly_driver.c" />
     <ClCompile Include="..\..\driver\razerkbd_driver.c" />
     <ClCompile Include="..\..\driver\razerkraken_driver.c" />
+    <ClCompile Include="..\..\driver\razermousemat_driver.c" />
     <ClCompile Include="..\..\driver\razermouse_driver.c" />
-    <ClCompile Include="..\..\driver\razermug_driver.c" />
     <ClCompile Include="..\winprojectexampledll\main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\driver\razeraccessory_driver.h" />
     <ClInclude Include="..\..\driver\razerchromacommon.h" />
     <ClInclude Include="..\..\driver\razercommon.h" />
     <ClInclude Include="..\..\driver\razercore_driver.h" />
-    <ClInclude Include="..\..\driver\razerfirefly_driver.h" />
     <ClInclude Include="..\..\driver\razerkbd_driver.h" />
     <ClInclude Include="..\..\driver\razerkraken_driver.h" />
+    <ClInclude Include="..\..\driver\razermousemat_driver.h" />
     <ClInclude Include="..\..\driver\razermouse_driver.h" />
-    <ClInclude Include="..\..\driver\razermug_driver.h" />
     <ClInclude Include="defines.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
