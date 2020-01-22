@@ -21,7 +21,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{720FE38F-432B-422C-AC23-00855B10313F}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <ProjectName>ChromaExampleDLL</ProjectName>
+    <ProjectName>OpenRazerExampleDLL</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">

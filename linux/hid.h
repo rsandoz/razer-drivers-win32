@@ -251,7 +251,7 @@ inline void openChromaDevice(struct hid_device** hdev, unsigned int* numHdev, st
 
 			if (*numHdev > 0)
 			{
-				//Copy old hdev into new buffer, correcting all pointers to their new locations
+				//Correct all previous pointers to their new locations
 				for (int old_dev = 0; old_dev < *numHdev; old_dev++)
 				{
 					(*hdev)[old_dev].dev.parent = &((*hdev)[old_dev].dev);

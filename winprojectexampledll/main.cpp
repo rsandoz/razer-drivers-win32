@@ -321,9 +321,9 @@ module_hid_driverh(razer_core_driver);
 #define RAZER_CORE_ROWS_NUM 1
 
 #ifdef _WIN64
-#define CHROMALINUXDLL        _T("ChromaDLL64.dll")
+#define OPENRAZERDLL        _T("OpenRazer64.dll")
 #elif WIN32
-#define CHROMALINUXDLL        _T("ChromaDLL.dll")
+#define OPENRAZERDLL        _T("OpenRazer.dll")
 #endif
 #endif
 
@@ -404,7 +404,7 @@ int main(int argc, char **argv) {
 	getc(stdin);
 	printf("\n");
 
-	HMODULE chromaLinuxModule = LoadLibrary(CHROMALINUXDLL);
+	HMODULE chromaLinuxModule = LoadLibrary(OPENRAZERDLL);
 	if (chromaLinuxModule == nullptr)
 		return 0;
 

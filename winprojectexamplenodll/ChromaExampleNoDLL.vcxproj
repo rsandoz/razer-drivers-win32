@@ -22,7 +22,7 @@
     <ProjectGuid>{72A1DC9D-32A9-423C-9638-EE544FE573BB}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
-    <ProjectName>ChromaExampleNoDLL</ProjectName>
+    <ProjectName>OpenRazerExampleNoDLL</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
