@@ -4,10 +4,14 @@
 #include <stdio.h>
 #include <windows.h>
 
+#define uint unsigned int
+#define ulong unsigned long
 #define u8 unsigned char
 #define u16 unsigned short
 #define u32 unsigned int
 #define u64 unsigned long
+
+#define ABS_VOLUME              0x20
 
 //input-event-codes.h
 #define KEY_RESERVED            0

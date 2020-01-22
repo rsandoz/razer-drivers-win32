@@ -21,28 +21,28 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{5D63D1FD-5530-4FA9-9B76-014C4235A690}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -133,16 +133,18 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\driver\razeraccessory_driver.c" />
     <ClCompile Include="..\driver\razerchromacommon.c" />
     <ClCompile Include="..\driver\razercommon.c" />
     <ClCompile Include="..\driver\razercore_driver.c" />
-    <ClCompile Include="..\driver\razerfirefly_driver.c" />
     <ClCompile Include="..\driver\razerkbd_driver.c" />
     <ClCompile Include="..\driver\razerkraken_driver.c" />
+    <ClCompile Include="..\driver\razermousemat_driver.c" />
     <ClCompile Include="..\driver\razermouse_driver.c" />
-    <ClCompile Include="..\driver\razermug_driver.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\driver\razeraccessory_driver.h" />
+    <ClInclude Include="..\driver\razermousemat_driver.h" />
     <ClInclude Include="linux\dmi.h" />
     <ClInclude Include="linux\hid.h" />
     <ClInclude Include="linux\init.h" />
@@ -154,11 +156,9 @@
     <ClInclude Include="..\driver\razerchromacommon.h" />
     <ClInclude Include="..\driver\razercommon.h" />
     <ClInclude Include="..\driver\razercore_driver.h" />
-    <ClInclude Include="..\driver\razerfirefly_driver.h" />
     <ClInclude Include="..\driver\razerkbd_driver.h" />
     <ClInclude Include="..\driver\razerkraken_driver.h" />
     <ClInclude Include="..\driver\razermouse_driver.h" />
-    <ClInclude Include="..\driver\razermug_driver.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

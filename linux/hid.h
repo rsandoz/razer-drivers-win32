@@ -17,6 +17,8 @@
 #define HID_CONNECT_FF                  0x20
 #define HID_CONNECT_DEFAULT     (HID_CONNECT_HIDINPUT|HID_CONNECT_HIDRAW| HID_CONNECT_HIDDEV|HID_CONNECT_FF)
 
+#define HID_GD_WHEEL					0x00010038
+
 #define HID_REQ_GET_REPORT              0x01
 #define HID_REQ_SET_REPORT				0x09
 
@@ -24,6 +26,13 @@
 #define USB_INTERFACE_PROTOCOL_MOUSE    2
 
 static const GUID GUID_DEVINTERFACE = { 0xDEE824EF, 0x729B, 0x4A0E, 0x9C, 0x14, 0xB7, 0x11, 0x7D, 0x33, 0xA8, 0x17 };
+
+typedef enum
+{
+HID_TYPE_OTHER,
+HID_TYPE_USBMOUSE,
+HID_TYPE_USBNONE
+} hid_type;
 
 struct hid_input {
 	struct input_dev *input;
@@ -34,6 +43,7 @@ struct hid_field {
 };
 
 struct hid_usage {
+	unsigned  hid;
 	__u16     code;                 /* input driver code */
 	__u8      type;                 /* input driver type */
 };
@@ -59,6 +69,8 @@ struct hid_device_id {
 };
 
 struct hid_device {
+	__u16 product;
+	enum hid_type type;
 	struct device dev;
 	struct hid_ll_driver *ll_driver;
 	unsigned int status;
@@ -148,6 +160,13 @@ inline void hid_err(struct hid_device *hdev, const char* msg, ...) {
 	printf(msg, args);
 	va_end(args);
 }
+
+inline void hid_map_usage(struct hid_input* hidinput,
+	struct hid_usage* usage, unsigned long** bit, int* max,
+	__u8 type, __u16 c)
+{
+
+};
 
 #define container_of(ptr, type, member) (type*)((char*)(ptr)-(char*)&((type *)0)->member)
 

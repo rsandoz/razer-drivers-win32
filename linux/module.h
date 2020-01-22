@@ -6,6 +6,7 @@
 
 #define MODULE_AUTHOR( __Declaration__ )
 #define MODULE_DESCRIPTION( __Declaration__ )
+#define MODULE_VERSION( __Declaration__ )
 #define MODULE_LICENSE( __Declaration__ )
 
 #define USB_CTRL_SET_TIMEOUT    5000
