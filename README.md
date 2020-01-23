@@ -1,11 +1,20 @@
-# ChromaDLL
+# OpenRazer-Win32
 
-Open ChromaDLL.sln in VS2015
-Build appropriate version (64 bit debug version is default)
+Control Razer devices on Windows without Synapse or Chroma SDK using the open source OpenRazer driver.  This project provides wrapper files that fill in for the Linux kernel headers and convert OpenRazer into a Windows DLL.
 
-Obtain the Zadig USB driver tool (to automate driver installation)
+### Building
 
-Start Zadig.
+Open OpenRazer.sln in the latest version of Visual Studio.  I use VS2019 Community Edition.
+
+Build the desired OpenRGB version.  There are also two example apps provided.  64 bit debug version is default.
+
+### Using
+
+You must install the WinUSB driver on the Razer device interfaces used for control message communication.  The Zadig tool makes it easy to install this driver for any USB device connected to your system.
+
+Start by obtaining the Zadig USB driver tool.  Start zadig.exe.
+
+https://zadig.akeo.ie/
 
 Select Options->List all devices (This queries all of the USB devices connected to your system)
 
