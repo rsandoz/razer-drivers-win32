@@ -1,0 +1,3 @@
+[submodule "openrazer"]
+	path = openrazer
+	url = https://github.com/CalcProgrammer1/openrazer

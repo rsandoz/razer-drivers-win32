@@ -89,6 +89,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <TargetMachine>MachineX86</TargetMachine>
@@ -105,6 +106,7 @@
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <AdditionalIncludeDirectories>$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <TargetMachine>MachineX86</TargetMachine>
@@ -118,6 +120,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <AdditionalIncludeDirectories>$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
@@ -127,6 +130,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <AdditionalIncludeDirectories>$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
@@ -134,18 +138,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\driver\razeraccessory_driver.c" />
-    <ClCompile Include="..\driver\razerchromacommon.c" />
-    <ClCompile Include="..\driver\razercommon.c" />
-    <ClCompile Include="..\driver\razercore_driver.c" />
-    <ClCompile Include="..\driver\razerkbd_driver.c" />
-    <ClCompile Include="..\driver\razerkraken_driver.c" />
-    <ClCompile Include="..\driver\razermousemat_driver.c" />
-    <ClCompile Include="..\driver\razermouse_driver.c" />
+    <ClCompile Include="openrazer\driver\razeraccessory_driver.c" />
+    <ClCompile Include="openrazer\driver\razerchromacommon.c" />
+    <ClCompile Include="openrazer\driver\razercommon.c" />
+    <ClCompile Include="openrazer\driver\razercore_driver.c" />
+    <ClCompile Include="openrazer\driver\razerkbd_driver.c" />
+    <ClCompile Include="openrazer\driver\razerkraken_driver.c" />
+    <ClCompile Include="openrazer\driver\razermousemat_driver.c" />
+    <ClCompile Include="openrazer\driver\razermouse_driver.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\driver\razeraccessory_driver.h" />
-    <ClInclude Include="..\driver\razermousemat_driver.h" />
     <ClInclude Include="linux\dmi.h" />
     <ClInclude Include="linux\hid.h" />
     <ClInclude Include="linux\init.h" />
@@ -154,12 +156,14 @@
     <ClInclude Include="linux\random.h" />
     <ClInclude Include="linux\slab.h" />
     <ClInclude Include="linux\usb\input.h" />
-    <ClInclude Include="..\driver\razerchromacommon.h" />
-    <ClInclude Include="..\driver\razercommon.h" />
-    <ClInclude Include="..\driver\razercore_driver.h" />
-    <ClInclude Include="..\driver\razerkbd_driver.h" />
-    <ClInclude Include="..\driver\razerkraken_driver.h" />
-    <ClInclude Include="..\driver\razermouse_driver.h" />
+    <ClInclude Include="openrazer\driver\razeraccessory_driver.h" />
+    <ClInclude Include="openrazer\driver\razerchromacommon.h" />
+    <ClInclude Include="openrazer\driver\razercommon.h" />
+    <ClInclude Include="openrazer\driver\razercore_driver.h" />
+    <ClInclude Include="openrazer\driver\razerkbd_driver.h" />
+    <ClInclude Include="openrazer\driver\razerkraken_driver.h" />
+    <ClInclude Include="openrazer\driver\razermousemat_driver.h" />
+    <ClInclude Include="openrazer\driver\razermouse_driver.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
