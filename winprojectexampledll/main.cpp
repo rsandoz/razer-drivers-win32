@@ -239,7 +239,7 @@ int main(int argc, char** argv)
         return 0;
 
     /*---------------------------------------------------------*\
-    | Map DLL functions 										|
+    | Map DLL functions                                         |
     \*---------------------------------------------------------*/
     typedef unsigned int(*INITRAZERDRIVER)(struct hid_device** hdev);
 
@@ -323,7 +323,7 @@ int main(int argc, char** argv)
     }
 
     /*---------------------------------------------------------*\
-    | Start by setting static white								|
+    | Start by setting static white                             |
     \*---------------------------------------------------------*/
     printf("Press enter to start...");
     getc(stdin);
@@ -404,7 +404,7 @@ int main(int argc, char** argv)
     }
 
     /*---------------------------------------------------------*\
-    | Test brightness											|
+    | Test brightness                                           |
     \*---------------------------------------------------------*/
     for (int i = 0; i < _countof(testBrightness); i++)
     {
@@ -442,7 +442,7 @@ int main(int argc, char** argv)
     }
 
     /*---------------------------------------------------------*\
-    | Test none (off)											|
+    | Test none (off)                                           |
     \*---------------------------------------------------------*/
     printf("Press enter to test none (turn everything off)...");
     getc(stdin);
@@ -501,7 +501,7 @@ int main(int argc, char** argv)
     }
 
     /*---------------------------------------------------------*\
-    | Test spectrum 											|
+    | Test spectrum                                             |
     \*---------------------------------------------------------*/
     printf("Press enter to test spectrum effects...");
     getc(stdin);
@@ -568,7 +568,7 @@ int main(int argc, char** argv)
     }
 
     /*---------------------------------------------------------*\
-    | Test reactive 											|
+    | Test reactive                                             |
     \*---------------------------------------------------------*/
     printf("Press enter to test reactive effects...");
     getc(stdin);
@@ -613,7 +613,7 @@ int main(int argc, char** argv)
     }
 
     /*---------------------------------------------------------*\
-    | Test static   											|
+    | Test static                                               |
     \*---------------------------------------------------------*/
     printf("Press enter to test static effects (loop through 6 colors)...");
     getc(stdin);
@@ -687,7 +687,7 @@ int main(int argc, char** argv)
     }
 
     /*---------------------------------------------------------*\
-    | Test custom   											|
+    | Test custom                                               |
     \*---------------------------------------------------------*/
     printf("Press enter to test custom effects...");
     getc(stdin);
