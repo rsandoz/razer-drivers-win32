@@ -2,11 +2,135 @@
 #include <stdio.h>
 #include <tchar.h>
 #include <wtypes.h>
+#include <vector>
 
 #include <linux/kernel.h>
 #include <defines.h>
 #include <linux/module.h>
 #include <linux/hid.h>
+
+typedef struct
+{
+	struct device_attribute* device_type;
+	struct device_attribute* device_serial;
+	struct device_attribute* firmware_version;
+
+	struct device_attribute* matrix_custom_frame;
+	struct device_attribute* matrix_brightness;
+
+	struct device_attribute* matrix_effect_custom;
+	struct device_attribute* matrix_effect_none;
+	struct device_attribute* matrix_effect_static;
+	struct device_attribute* matrix_effect_breath;
+	struct device_attribute* matrix_effect_spectrum;
+	struct device_attribute* matrix_effect_reactive;
+	struct device_attribute* matrix_effect_wave;
+
+	struct device_attribute* logo_led_brightness;
+	struct device_attribute* logo_matrix_effect_none;
+	struct device_attribute* logo_matrix_effect_static;
+	struct device_attribute* logo_matrix_effect_breath;
+	struct device_attribute* logo_matrix_effect_spectrum;
+	struct device_attribute* logo_matrix_effect_reactive;
+
+	struct device_attribute* scroll_led_brightness;
+	struct device_attribute* scroll_matrix_effect_none;
+	struct device_attribute* scroll_matrix_effect_static;
+	struct device_attribute* scroll_matrix_effect_breath;
+	struct device_attribute* scroll_matrix_effect_spectrum;
+	struct device_attribute* scroll_matrix_effect_reactive;
+
+	struct device_attribute* left_led_brightness;
+	struct device_attribute* left_matrix_effect_none;
+	struct device_attribute* left_matrix_effect_static;
+	struct device_attribute* left_matrix_effect_breath;
+	struct device_attribute* left_matrix_effect_spectrum;
+	struct device_attribute* left_matrix_effect_reactive;
+	struct device_attribute* left_matrix_effect_wave;
+
+	struct device_attribute* right_led_brightness;
+	struct device_attribute* right_matrix_effect_none;
+	struct device_attribute* right_matrix_effect_static;
+	struct device_attribute* right_matrix_effect_breath;
+	struct device_attribute* right_matrix_effect_spectrum;
+	struct device_attribute* right_matrix_effect_reactive;
+	struct device_attribute* right_matrix_effect_wave;
+
+	struct device_attribute* scroll_led_effect;
+	struct device_attribute* scroll_led_rgb;
+} device_fn_type;
+
+typedef struct
+{
+	struct device_attribute* dev_attr_list[40];
+} device_fn_list_type;
+
+static const char* device_fn_names[] =
+{
+	"device_type",
+	"device_serial",
+	"firmware_version",
+
+	"matrix_custom_frame",
+	"matrix_brightness",
+
+	"matrix_effect_custom",
+	"matrix_effect_none",
+	"matrix_effect_static",
+	"matrix_effect_breath",
+	"matrix_effect_spectrum",
+	"matrix_effect_reactive",
+	"matrix_effect_wave",
+
+	"logo_led_brightness",
+	"logo_matrix_effect_none",
+	"logo_matrix_effect_static",
+	"logo_matrix_effect_breath",
+	"logo_matrix_effect_spectrum",
+	"logo_matrix_effect_reactive",
+
+	"scroll_led_brightness",
+	"scroll_matrix_effect_none",
+	"scroll_matrix_effect_static",
+	"scroll_matrix_effect_breath",
+	"scroll_matrix_effect_spectrum",
+	"scroll_matrix_effect_reactive",
+
+	"left_led_brightness",
+	"left_matrix_effect_none",
+	"left_matrix_effect_static",
+	"left_matrix_effect_breath",
+	"left_matrix_effect_spectrum",
+	"left_matrix_effect_reactive",
+	"left_matrix_effect_wave",
+
+	"right_led_brightness",
+	"right_matrix_effect_none",
+	"right_matrix_effect_static",
+	"right_matrix_effect_breath",
+	"right_matrix_effect_spectrum",
+	"right_matrix_effect_reactive",
+	"right_matrix_effect_wave",
+
+	"scroll_led_effect",
+	"scroll_led_rgb"
+};
+
+static void load_device_fn(device_fn_type* device_fn, device* dev)
+{
+	memset(device_fn, 0, sizeof(device_fn_type));
+
+	for (int table_idx = 0; table_idx < 40; table_idx++)
+	{
+		for (int list_idx = 0; list_idx < dev->attr_count; list_idx++)
+		{
+			if (strcmp(device_fn_names[table_idx], dev->attr_list[list_idx]->name) == 0)
+			{
+				((device_fn_list_type*)device_fn)->dev_attr_list[table_idx] = dev->attr_list[list_idx];
+			}
+		}
+	}
+}
 
 #ifdef DLL_INTERNAL
 // Hack to turn Linux device macros into API calls
@@ -206,119 +330,6 @@ module_hid_driverh(razer_core_driver);
 
 }
 #else
-#define USB_VENDOR_ID_RAZER 0x1532
-#define USB_DEVICE_ID_RAZER_CHROMA_MUG 0x0f07
-
-#define USB_DEVICE_ID_RAZER_IMPERATOR 0x002F
-#define USB_DEVICE_ID_RAZER_OUROBOROS 0x0032
-#define USB_DEVICE_ID_RAZER_ABYSSUS 0x0042
-#define USB_DEVICE_ID_RAZER_DEATHADDER_CHROMA 0x0043
-#define USB_DEVICE_ID_RAZER_MAMBA_WIRED 0x0044
-#define USB_DEVICE_ID_RAZER_MAMBA_WIRELESS 0x0045
-#define USB_DEVICE_ID_RAZER_MAMBA_TE_WIRED 0x0046
-#define USB_DEVICE_ID_RAZER_OROCHI_2013 0x0039
-#define USB_DEVICE_ID_RAZER_OROCHI_CHROMA 0x0048
-#define USB_DEVICE_ID_RAZER_NAGA_EPIC_WIRELESS 0x0021
-#define USB_DEVICE_ID_RAZER_NAGA_EPIC_WIRED 0x001F
-#define USB_DEVICE_ID_RAZER_NAGA_HEX_V2 0x0050
-#define USB_DEVICE_ID_RAZER_DEATHADDER_ELITE 0x005C
-#define USB_DEVICE_ID_RAZER_DIAMONDBACK_CHROMA 0x004C
-
-#define RAZER_MAMBA_ROW_LEN 15          // 0 => 14
-#define RAZER_MAMBA_TE_ROW_LEN 16       // 0 => 15
-#define RAZER_DIAMONDBACK_ROW_LEN 21    // 0 => 20
-
-#define USB_DEVICE_ID_RAZER_KRAKEN_V2 0x0510
-#define USB_DEVICE_ID_RAZER_KRAKEN 0x0504
-
-#define USB_DEVICE_ID_RAZER_BLACKWIDOW_ULTIMATE_2012 0x010D
-#define USB_DEVICE_ID_RAZER_ANANSI 0x010F
-#define USB_DEVICE_ID_RAZER_ORBWEAVER 0x0113
-#define USB_DEVICE_ID_RAZER_BLACKWIDOW_ULTIMATE_2013 0x011A
-#define USB_DEVICE_ID_RAZER_BLACKWIDOW_ORIGINAL 0x011B
-#define USB_DEVICE_ID_RAZER_BLACKWIDOW_CHROMA 0x0203
-#define USB_DEVICE_ID_RAZER_DEATHSTALKER_ULTIMATE 0x0114
-#define USB_DEVICE_ID_RAZER_DEATHSTALKER_CHROMA 0x0204
-#define USB_DEVICE_ID_RAZER_BLADE_STEALTH 0x0205
-#define USB_DEVICE_ID_RAZER_BLADE_2015 0x011D
-#define USB_DEVICE_ID_RAZER_TARTARUS_CHROMA 0x0208
-#define USB_DEVICE_ID_RAZER_BLACKWIDOW_CHROMA_TE 0x0209
-#define USB_DEVICE_ID_RAZER_BLADE_QHD 0x020F
-#define USB_DEVICE_ID_RAZER_BLADE_PRO_LATE_2016 0x0210
-#define USB_DEVICE_ID_RAZER_BLACKWIDOW_ULTIMATE_2016 0x0214
-#define USB_DEVICE_ID_RAZER_BLACKWIDOW_X_CHROMA 0x0216
-#define USB_DEVICE_ID_RAZER_BLACKWIDOW_X_ULTIMATE 0x0217
-#define USB_DEVICE_ID_RAZER_BLACKWIDOW_X_CHROMA_TE 0x021a
-#define USB_DEVICE_ID_RAZER_ORNATA_CHROMA 0x021e
-#define USB_DEVICE_ID_RAZER_ORNATA 0x021f
-#define USB_DEVICE_ID_RAZER_BLADE_STEALTH_LATE_2016 0x0220
-
-#define RAZER_BLACKWIDOW_CHROMA_WAVE_DIRECTION_LEFT 2
-#define RAZER_BLACKWIDOW_CHROMA_WAVE_DIRECTION_RIGHT 1
-
-#define RAZER_BLACKWIDOW_CHROMA_CHANGE_EFFECT 0x0A
-
-#define RAZER_BLACKWIDOW_CHROMA_EFFECT_NONE 0
-#define RAZER_BLACKWIDOW_CHROMA_EFFECT_WAVE 1
-#define RAZER_BLACKWIDOW_CHROMA_EFFECT_REACTIVE 2
-#define RAZER_BLACKWIDOW_CHROMA_EFFECT_BREATH 3
-#define RAZER_BLACKWIDOW_CHROMA_EFFECT_SPECTRUM 4
-#define RAZER_BLACKWIDOW_CHROMA_EFFECT_CUSTOM 5 // draw frame 
-#define RAZER_BLACKWIDOW_CHROMA_EFFECT_STATIC 6
-#define RAZER_BLACKWIDOW_CHROMA_EFFECT_CLEAR_ROW 8
-
-#define RAZER_BLACKWIDOW_ULTIMATE_2016_EFFECT_STARLIGHT 0x19
-
-#define RAZER_BLACKWIDOW_CHROMA_EFFECT_SET_KEYS 9 //update profile needs to be called after setting keys to reflect changes
-#define RAZER_BLACKWIDOW_CHROMA_EFFECT_RESET 10
-#define RAZER_BLACKWIDOW_CHROMA_EFFECT_UNKNOWN 11
-#define RAZER_BLACKWIDOW_CHROMA_EFFECT_UNKNOWN2 12
-#define RAZER_BLACKWIDOW_CHROMA_EFFECT_UNKNOWN3 13
-#define RAZER_BLACKWIDOW_CHROMA_EFFECT_UNKNOWN4 14
-
-#define RAZER_BLACKWIDOW_CHROMA_ROW_LEN 0x16
-#define RAZER_BLACKWIDOW_CHROMA_ROWS_NUM 6
-
-#define RAZER_STEALTH_ROW_LEN 0x10
-#define RAZER_STEALTH_ROWS_NUM 6
-
-#define USB_DEVICE_ID_RAZER_FIREFLY 0x0C00
-
-#define RAZER_FIREFLY_WAVE_DIRECTION_ACW 2
-#define RAZER_FIREFLY_WAVE_DIRECTION_CW 1
-
-#define RAZER_FIREFLY_CHANGE_EFFECT 0x0A
-
-#define RAZER_FIREFLY_EFFECT_NONE 0
-#define RAZER_FIREFLY_EFFECT_WAVE 1
-#define RAZER_FIREFLY_EFFECT_REACTIVE 2 // Didn't get this working
-#define RAZER_FIREFLY_EFFECT_BREATH 3
-#define RAZER_FIREFLY_EFFECT_SPECTRUM 4
-#define RAZER_FIREFLY_EFFECT_CUSTOM 5
-#define RAZER_FIREFLY_EFFECT_STATIC 6
-#define RAZER_FIREFLY_EFFECT_CLEAR_ROW 8
-
-#define RAZER_FIREFLY_ROW_LEN 0x0F
-#define RAZER_FIREFLY_ROWS_NUM 1
-
-#define USB_DEVICE_ID_RAZER_CORE 0x0215
-
-#define RAZER_CORE_WAVE_DIRECTION_ACW 2
-#define RAZER_CORE_WAVE_DIRECTION_CW 1
-
-#define RAZER_CORE_CHANGE_EFFECT 0x0A
-
-#define RAZER_CORE_EFFECT_NONE 0
-#define RAZER_CORE_EFFECT_WAVE 1
-#define RAZER_CORE_EFFECT_REACTIVE 2 // Didn't get this working
-#define RAZER_CORE_EFFECT_BREATH 3
-#define RAZER_CORE_EFFECT_SPECTRUM 4
-#define RAZER_CORE_EFFECT_CUSTOM 5
-#define RAZER_CORE_EFFECT_STATIC 6
-#define RAZER_CORE_EFFECT_CLEAR_ROW 8
-
-#define RAZER_CORE_ROW_LEN 0x0F
-#define RAZER_CORE_ROWS_NUM 1
 
 #ifdef _WIN64
 #define OPENRAZERDLL        _T("OpenRazer64.dll")
@@ -364,41 +375,8 @@ static unsigned char blue(COLORREF color) {
 	return (char)((color & 0xFF0000) >> 16);
 }
 
-static void staticEffect(struct device* device, unsigned long color, struct device_attribute effect) {
-	char buf[4] = "\x00\x00\x00";
-	buf[0] = red(color);
-	buf[1] = green(color);
-	buf[2] = blue(color);
-	effect.store(device, NULL, (const char*)&buf[0], 3);
-}
-
-static void colorize(std::set<struct device*> devices, unsigned int maxRow, unsigned int maxCol, unsigned int offset, struct device_attribute frame, struct device_attribute effect) {
-	char* buf = new char[3 * maxCol + 4];
-	buf[1] = 0;
-	buf[2] = maxCol - 1;
-	for (struct device* device : devices) {
-		switch ((to_usb_device(device))->descriptor.idProduct) {
-			case USB_DEVICE_ID_RAZER_ANANSI:
-				break;
-			default:
-				for (unsigned int row = 0; row < maxRow; row++) {
-					buf[0] = row;
-					for (unsigned int col = 0; col < maxCol; col++) {
-						unsigned long color = testColor[(row*maxCol + col + offset) % _countof(testColor)];
-						buf[3 * col + 3] = (char)(color & 0x0000FF);
-						buf[3 * col + 4] = (char)((color & 0x00FF00) >> 8);
-						buf[3 * col + 5] = (char)((color & 0xFF0000) >> 16);
-					}
-					frame.store(device, NULL, (const char*)&buf[0], 3 * maxCol + 4 - 1);
-				}
-				effect.store(device, NULL, 0, 0);
-		}
-		//printf("%s\n", effect.name);
-	}
-	delete[] buf;
-}
 static	std::set<struct device*> deviceFireflies;
-int main(int argc, char **argv) {
+int main(int argc, char** argv) {
 #ifndef DLL_INTERNAL
 	printf("Press enter to load DLL...");
 	getc(stdin);
@@ -410,72 +388,13 @@ int main(int argc, char **argv) {
 
 	// map DLL calls
 	typedef unsigned int(*INITRAZERDRIVER)(struct hid_device** hdev);
-	
-	INITRAZERDRIVER init_razer_kbd_driver = reinterpret_cast<INITRAZERDRIVER>(GetProcAddress(chromaLinuxModule, "init_razer_kbd_driver"));
-	struct device_attribute devkbd_attr_matrix_effect_custom = *(struct device_attribute*)reinterpret_cast<void*>(GetProcAddress(chromaLinuxModule, "devkbd_attr_matrix_effect_custom"));
-	struct device_attribute devkbd_attr_matrix_custom_frame = *(struct device_attribute*)reinterpret_cast<void*>(GetProcAddress(chromaLinuxModule, "devkbd_attr_matrix_custom_frame"));
-	struct device_attribute devkbd_attr_matrix_brightness = *(struct device_attribute*)reinterpret_cast<void*>(GetProcAddress(chromaLinuxModule, "devkbd_attr_matrix_brightness"));
-	struct device_attribute devkbd_attr_matrix_effect_none = *(struct device_attribute*)reinterpret_cast<void*>(GetProcAddress(chromaLinuxModule, "devkbd_attr_matrix_effect_none"));
-	struct device_attribute devkbd_attr_matrix_effect_static = *(struct device_attribute*)reinterpret_cast<void*>(GetProcAddress(chromaLinuxModule, "devkbd_attr_matrix_effect_static"));
-	struct device_attribute devkbd_attr_matrix_effect_spectrum = *(struct device_attribute*)reinterpret_cast<void*>(GetProcAddress(chromaLinuxModule, "devkbd_attr_matrix_effect_spectrum"));
-	struct device_attribute devkbd_attr_matrix_effect_reactive = *(struct device_attribute*)reinterpret_cast<void*>(GetProcAddress(chromaLinuxModule, "devkbd_attr_matrix_effect_reactive"));
 
-	INITRAZERDRIVER init_razer_mousemat_driver = reinterpret_cast<INITRAZERDRIVER>(GetProcAddress(chromaLinuxModule, "init_razer_mousemat_driver"));
-    struct device_attribute devmousemat_attr_device_type = *(struct device_attribute*)reinterpret_cast<void*>(GetProcAddress(chromaLinuxModule, "devmousemat_attr_device_type"));
-	struct device_attribute devmousemat_attr_matrix_effect_custom = *(struct device_attribute*)reinterpret_cast<void*>(GetProcAddress(chromaLinuxModule, "devmousemat_attr_matrix_effect_custom"));
-	struct device_attribute devmousemat_attr_matrix_custom_frame = *(struct device_attribute*)reinterpret_cast<void*>(GetProcAddress(chromaLinuxModule, "devmousemat_attr_matrix_custom_frame"));
-	struct device_attribute devmousemat_attr_matrix_brightness = *(struct device_attribute*)reinterpret_cast<void*>(GetProcAddress(chromaLinuxModule, "devmousemat_attr_matrix_brightness"));
-	struct device_attribute devmousemat_attr_matrix_effect_none = *(struct device_attribute*)reinterpret_cast<void*>(GetProcAddress(chromaLinuxModule, "devmousemat_attr_matrix_effect_none"));
-	struct device_attribute devmousemat_attr_matrix_effect_static = *(struct device_attribute*)reinterpret_cast<void*>(GetProcAddress(chromaLinuxModule, "devmousemat_attr_matrix_effect_static"));
-	struct device_attribute devmousemat_attr_matrix_effect_spectrum = *(struct device_attribute*)reinterpret_cast<void*>(GetProcAddress(chromaLinuxModule, "devmousemat_attr_matrix_effect_spectrum"));
-	struct device_attribute devmousemat_attr_matrix_effect_reactive = *(struct device_attribute*)reinterpret_cast<void*>(GetProcAddress(chromaLinuxModule, "devmousemat_attr_matrix_effect_reactive"));
-	
-	INITRAZERDRIVER init_razer_mouse_driver = reinterpret_cast<INITRAZERDRIVER>(GetProcAddress(chromaLinuxModule, "init_razer_mouse_driver"));
-	struct device_attribute devmouse_attr_matrix_effect_custom = *(struct device_attribute*)reinterpret_cast<void*>(GetProcAddress(chromaLinuxModule, "devmouse_attr_matrix_effect_custom"));
-	struct device_attribute devmouse_attr_matrix_custom_frame= *(struct device_attribute*)reinterpret_cast<void*>(GetProcAddress(chromaLinuxModule, "devmouse_attr_matrix_custom_frame"));
-	struct device_attribute devmouse_attr_matrix_brightness= *(struct device_attribute*)reinterpret_cast<void*>(GetProcAddress(chromaLinuxModule, "devmouse_attr_matrix_brightness"));
-	struct device_attribute devmouse_attr_logo_led_brightness= *(struct device_attribute*)reinterpret_cast<void*>(GetProcAddress(chromaLinuxModule, "devmouse_attr_logo_led_brightness"));
-	struct device_attribute devmouse_attr_scroll_led_brightness= *(struct device_attribute*)reinterpret_cast<void*>(GetProcAddress(chromaLinuxModule, "devmouse_attr_scroll_led_brightness"));
-	struct device_attribute devmouse_attr_matrix_effect_none= *(struct device_attribute*)reinterpret_cast<void*>(GetProcAddress(chromaLinuxModule, "devmouse_attr_matrix_effect_none"));
-	struct device_attribute devmouse_attr_logo_matrix_effect_none= *(struct device_attribute*)reinterpret_cast<void*>(GetProcAddress(chromaLinuxModule, "devmouse_attr_logo_matrix_effect_none"));
-	struct device_attribute devmouse_attr_scroll_matrix_effect_none= *(struct device_attribute*)reinterpret_cast<void*>(GetProcAddress(chromaLinuxModule, "devmouse_attr_scroll_matrix_effect_none"));
-	struct device_attribute devmouse_attr_matrix_effect_static= *(struct device_attribute*)reinterpret_cast<void*>(GetProcAddress(chromaLinuxModule, "devmouse_attr_matrix_effect_static"));
-	struct device_attribute devmouse_attr_logo_matrix_effect_static= *(struct device_attribute*)reinterpret_cast<void*>(GetProcAddress(chromaLinuxModule, "devmouse_attr_logo_matrix_effect_static"));
-	struct device_attribute devmouse_attr_scroll_matrix_effect_static= *(struct device_attribute*)reinterpret_cast<void*>(GetProcAddress(chromaLinuxModule, "devmouse_attr_scroll_matrix_effect_static"));
-	struct device_attribute devmouse_attr_matrix_effect_spectrum= *(struct device_attribute*)reinterpret_cast<void*>(GetProcAddress(chromaLinuxModule, "devmouse_attr_matrix_effect_spectrum"));
-	struct device_attribute devmouse_attr_logo_matrix_effect_spectrum= *(struct device_attribute*)reinterpret_cast<void*>(GetProcAddress(chromaLinuxModule, "devmouse_attr_logo_matrix_effect_spectrum"));
-	struct device_attribute devmouse_attr_scroll_matrix_effect_spectrum= *(struct device_attribute*)reinterpret_cast<void*>(GetProcAddress(chromaLinuxModule, "devmouse_attr_scroll_matrix_effect_spectrum"));
-	struct device_attribute devmouse_attr_matrix_effect_reactive= *(struct device_attribute*)reinterpret_cast<void*>(GetProcAddress(chromaLinuxModule, "devmouse_attr_matrix_effect_reactive"));
-	struct device_attribute devmouse_attr_logo_matrix_effect_reactive= *(struct device_attribute*)reinterpret_cast<void*>(GetProcAddress(chromaLinuxModule, "devmouse_attr_logo_matrix_effect_reactive"));
-	struct device_attribute devmouse_attr_scroll_matrix_effect_reactive= *(struct device_attribute*)reinterpret_cast<void*>(GetProcAddress(chromaLinuxModule, "devmouse_attr_scroll_matrix_effect_reactive"));
-	struct device_attribute devmouse_attr_scroll_led_effect= *(struct device_attribute*)reinterpret_cast<void*>(GetProcAddress(chromaLinuxModule, "devmouse_attr_scroll_led_effect"));
-	struct device_attribute devmouse_attr_scroll_led_rgb= *(struct device_attribute*)reinterpret_cast<void*>(GetProcAddress(chromaLinuxModule, "devmouse_attr_scroll_led_rgb"));
-	struct device_attribute devmouse_attr_scroll_led_state= *(struct device_attribute*)reinterpret_cast<void*>(GetProcAddress(chromaLinuxModule, "devmouse_attr_scroll_led_state"));
-
+	INITRAZERDRIVER init_razer_kbd_driver		= reinterpret_cast<INITRAZERDRIVER>(GetProcAddress(chromaLinuxModule, "init_razer_kbd_driver"));
+	INITRAZERDRIVER init_razer_mousemat_driver	= reinterpret_cast<INITRAZERDRIVER>(GetProcAddress(chromaLinuxModule, "init_razer_mousemat_driver"));
+	INITRAZERDRIVER init_razer_mouse_driver		= reinterpret_cast<INITRAZERDRIVER>(GetProcAddress(chromaLinuxModule, "init_razer_mouse_driver"));
 	INITRAZERDRIVER init_razer_accessory_driver = reinterpret_cast<INITRAZERDRIVER>(GetProcAddress(chromaLinuxModule, "init_razer_accessory_driver"));
-	struct device_attribute devaccessory_attr_matrix_effect_custom= *(struct device_attribute*)reinterpret_cast<void*>(GetProcAddress(chromaLinuxModule, "devaccessory_attr_matrix_effect_custom"));
-	struct device_attribute devaccessory_attr_matrix_custom_frame= *(struct device_attribute*)reinterpret_cast<void*>(GetProcAddress(chromaLinuxModule, "devaccessory_attr_matrix_custom_frame"));
-	struct device_attribute devaccessory_attr_matrix_brightness= *(struct device_attribute*)reinterpret_cast<void*>(GetProcAddress(chromaLinuxModule, "devaccessory_attr_matrix_brightness"));
-	struct device_attribute devaccessory_attr_matrix_effect_none= *(struct device_attribute*)reinterpret_cast<void*>(GetProcAddress(chromaLinuxModule, "devaccessory_attr_matrix_effect_none"));
-	struct device_attribute devaccessory_attr_matrix_effect_static= *(struct device_attribute*)reinterpret_cast<void*>(GetProcAddress(chromaLinuxModule, "devaccessory_attr_matrix_effect_static"));
-	struct device_attribute devaccessory_attr_matrix_effect_spectrum= *(struct device_attribute*)reinterpret_cast<void*>(GetProcAddress(chromaLinuxModule, "devaccessory_attr_matrix_effect_spectrum"));
-
-	INITRAZERDRIVER init_razer_kraken_driver = reinterpret_cast<INITRAZERDRIVER>(GetProcAddress(chromaLinuxModule, "init_razer_kraken_driver"));
-	//struct device_attribute devkraken_attr_matrix_effect_custom= *(struct device_attribute*)reinterpret_cast<void*>(GetProcAddress(chromaLinuxModule, "devkraken_attr_matrix_effect_custom"));
-	//struct device_attribute devkraken_attr_matrix_custom_frame= *(struct device_attribute*)reinterpret_cast<void*>(GetProcAddress(chromaLinuxModule, "devkraken_attr_matrix_custom_frame"));
-	//struct device_attribute devkraken_attr_matrix_brightness= *(struct device_attribute*)reinterpret_cast<void*>(GetProcAddress(chromaLinuxModule, "devkraken_attr_matrix_brightness"));
-	struct device_attribute devkraken_attr_matrix_effect_none= *(struct device_attribute*)reinterpret_cast<void*>(GetProcAddress(chromaLinuxModule, "devkraken_attr_matrix_effect_none"));
-	struct device_attribute devkraken_attr_matrix_effect_static= *(struct device_attribute*)reinterpret_cast<void*>(GetProcAddress(chromaLinuxModule, "devkraken_attr_matrix_effect_static"));
-	struct device_attribute devkraken_attr_matrix_effect_spectrum= *(struct device_attribute*)reinterpret_cast<void*>(GetProcAddress(chromaLinuxModule, "devkraken_attr_matrix_effect_spectrum"));
-
-	INITRAZERDRIVER init_razer_core_driver = reinterpret_cast<INITRAZERDRIVER>(GetProcAddress(chromaLinuxModule, "init_razer_core_driver"));
-	struct device_attribute devcore_attr_matrix_effect_custom = *(struct device_attribute*)reinterpret_cast<void*>(GetProcAddress(chromaLinuxModule, "devcore_attr_matrix_effect_custom"));
-	struct device_attribute devcore_attr_matrix_custom_frame = *(struct device_attribute*)reinterpret_cast<void*>(GetProcAddress(chromaLinuxModule, "devcore_attr_matrix_custom_frame"));
-	struct device_attribute devcore_attr_matrix_brightness = *(struct device_attribute*)reinterpret_cast<void*>(GetProcAddress(chromaLinuxModule, "devcore_attr_matrix_brightness"));
-	struct device_attribute devcore_attr_matrix_effect_none = *(struct device_attribute*)reinterpret_cast<void*>(GetProcAddress(chromaLinuxModule, "devcore_attr_matrix_effect_none"));
-	struct device_attribute devcore_attr_matrix_effect_static = *(struct device_attribute*)reinterpret_cast<void*>(GetProcAddress(chromaLinuxModule, "devcore_attr_matrix_effect_static"));
-	struct device_attribute devcore_attr_matrix_effect_spectrum = *(struct device_attribute*)reinterpret_cast<void*>(GetProcAddress(chromaLinuxModule, "devcore_attr_matrix_effect_spectrum"));
-	struct device_attribute devcore_attr_matrix_effect_reactive = *(struct device_attribute*)reinterpret_cast<void*>(GetProcAddress(chromaLinuxModule, "devcore_attr_matrix_effect_reactive"));
+	INITRAZERDRIVER init_razer_kraken_driver	= reinterpret_cast<INITRAZERDRIVER>(GetProcAddress(chromaLinuxModule, "init_razer_kraken_driver"));
+	INITRAZERDRIVER init_razer_core_driver		= reinterpret_cast<INITRAZERDRIVER>(GetProcAddress(chromaLinuxModule, "init_razer_core_driver"));
 #endif
 
 	printf("Press enter to init usb and devices...");
@@ -483,229 +402,340 @@ int main(int argc, char **argv) {
 	printf("\n");
 
 	struct hid_device* hdev;
+	std::vector<device*> devs;
+	std::vector<device_fn_type> devices;
 	unsigned int num;
 
 	hdev = NULL;
-
 	num = init_razer_mousemat_driver(&hdev);
-    for (unsigned int i = 0; i < num; i++)
-    {
-        deviceFireflies.insert(&hdev[i].dev);
-    }
+	for (unsigned int i = 0; i < num; i++)
+	{
+		device_fn_type new_dev;
+		load_device_fn(&new_dev, &hdev[i].dev);
+		devs.push_back(&hdev[i].dev);
+		devices.push_back(new_dev);
+	}
+
 	hdev = NULL;
-	std::set<struct device*> deviceKeyboards;
 	num = init_razer_kbd_driver(&hdev);
 	for (unsigned int i = 0; i < num; i++)
-		deviceKeyboards.insert(&hdev[i].dev);
+	{
+		device_fn_type new_dev;
+		load_device_fn(&new_dev, &hdev[i].dev);
+		devs.push_back(&hdev[i].dev);
+		devices.push_back(new_dev);
+	}
 
 	hdev = NULL;
-	std::set<struct device*> deviceMice;
 	num = init_razer_mouse_driver(&hdev);
 	for (unsigned int i = 0; i < num; i++)
-		deviceMice.insert(&hdev[i].dev);
+	{
+		device_fn_type new_dev;
+		load_device_fn(&new_dev, &hdev[i].dev);
+		devs.push_back(&hdev[i].dev);
+		devices.push_back(new_dev);
+	}
 
 	hdev = NULL;
-	std::set<struct device*> deviceMugs;
 	num = init_razer_accessory_driver(&hdev);
 	for (unsigned int i = 0; i < num; i++)
-		deviceMugs.insert(&hdev[i].dev);
+	{
+		device_fn_type new_dev;
+		load_device_fn(&new_dev, &hdev[i].dev);
+		devs.push_back(&hdev[i].dev);
+		devices.push_back(new_dev);
+	}
 
 	hdev = NULL;
-	std::set<struct device*> deviceCores;
 	num = init_razer_core_driver(&hdev);
 	for (unsigned int i = 0; i < num; i++)
-		deviceCores.insert(&hdev[i].dev);
+	{
+		device_fn_type new_dev;
+		load_device_fn(&new_dev, &hdev[i].dev);
+		devs.push_back(&hdev[i].dev);
+		devices.push_back(new_dev);
+	}
 
 	hdev = NULL;
-	std::set<struct device*> deviceKrakens;
 	num = init_razer_kraken_driver(&hdev);
 	for (unsigned int i = 0; i < num; i++)
-		deviceKrakens.insert(&hdev[i].dev);
+	{
+		device_fn_type new_dev;
+		load_device_fn(&new_dev, &hdev[i].dev);
+		devs.push_back(&hdev[i].dev);
+		devices.push_back(new_dev);
+	}
 
 	printf("Press enter to start...");
 	getc(stdin);
 	printf("\n");
 
-	for (struct device* device : deviceKeyboards) 
-		staticEffect(device, RGB(0xFF,0xFF,0xFF), devkbd_attr_matrix_effect_static);
-	for (struct device* device : deviceMice)
-		switch ((to_usb_device(device))->descriptor.idProduct) {
-			case USB_DEVICE_ID_RAZER_DEATHADDER_ELITE:
-				staticEffect(device, RGB(0xFF,0xFF,0xFF), devmouse_attr_logo_matrix_effect_static);
-				staticEffect(device, RGB(0xFF,0xFF,0xFF), devmouse_attr_scroll_matrix_effect_static);
-				break;
-			default:
-				staticEffect(device, RGB(0xFF,0xFF,0xFF), devmouse_attr_matrix_effect_static);
-				break;
-		}
-	for (struct device* device : deviceFireflies) 
-		staticEffect(device, RGB(0xFF,0xFF,0xFF), devmousemat_attr_matrix_effect_static);
-	for (struct device* device : deviceMugs) 
-		staticEffect(device, RGB(0xFF,0xFF,0xFF), devaccessory_attr_matrix_effect_static);
-	for (struct device* device : deviceCores) 
-		staticEffect(device, RGB(0xFF,0xFF,0xFF), devcore_attr_matrix_effect_static);
-	for (struct device* device : deviceKrakens) 
-		staticEffect(device, RGB(0xFF,0xFF,0xFF), devkraken_attr_matrix_effect_static);
+	//Start by setting static white
+	for (int dev_idx = 0; dev_idx < devices.size(); dev_idx++)
+	{
+		if (devices[dev_idx].matrix_effect_static)
+		{
+			const char cmd[3] = { 0xFF, 0xFF, 0xFF };
 
-	for (int i = 0; i < _countof(testBrightness); i++) {
+			devices[dev_idx].matrix_effect_static->store(devs[dev_idx], NULL, cmd, 3);
+		}
+
+		if (devices[dev_idx].logo_matrix_effect_static)
+		{
+			const char cmd[3] = { 0xFF, 0xFF, 0xFF };
+
+			devices[dev_idx].logo_matrix_effect_static->store(devs[dev_idx], NULL, cmd, 3);
+		}
+
+		if (devices[dev_idx].scroll_matrix_effect_static)
+		{
+			const char cmd[3] = { 0xFF, 0xFF, 0xFF };
+
+			devices[dev_idx].scroll_matrix_effect_static->store(devs[dev_idx], NULL, cmd, 3);
+		}
+
+		if (devices[dev_idx].left_matrix_effect_static)
+		{
+			const char cmd[3] = { 0xFF, 0xFF, 0xFF };
+
+			devices[dev_idx].left_matrix_effect_static->store(devs[dev_idx], NULL, cmd, 3);
+		}
+
+		if (devices[dev_idx].right_matrix_effect_static)
+		{
+			const char cmd[3] = { 0xFF, 0xFF, 0xFF };
+
+			devices[dev_idx].right_matrix_effect_static->store(devs[dev_idx], NULL, cmd, 3);
+		}
+	}
+
+	//Test brightness
+	for (int i = 0; i < _countof(testBrightness); i++)
+	{
 		printf("Press enter to test brightness level %s ...", testBrightness[i]);
 		getc(stdin);
 		printf("\n");
 
-		for (struct device* device : deviceKeyboards) 
-			devkbd_attr_matrix_brightness.store(device, NULL, testBrightness[i], strlen(testBrightness[i])-1);
-		for (struct device* device : deviceMice)
-			switch ((to_usb_device(device))->descriptor.idProduct) {
-				case USB_DEVICE_ID_RAZER_DEATHADDER_ELITE:
-					devmouse_attr_logo_led_brightness.store(device, NULL, testBrightness[i], strlen(testBrightness[i])-1);
-					devmouse_attr_scroll_led_brightness.store(device, NULL, testBrightness[i], strlen(testBrightness[i])-1);
-					break;
-				default:
-					devmouse_attr_matrix_brightness.store(device, NULL, testBrightness[i], strlen(testBrightness[i])-1);
-					break;
+		for (int dev_idx = 0; dev_idx < devices.size(); dev_idx++)
+		{
+			if (devices[dev_idx].matrix_brightness)
+			{
+				devices[dev_idx].matrix_brightness->store(devs[dev_idx], NULL, testBrightness[i], strlen(testBrightness[i]) - 1);
 			}
-		for (struct device* device : deviceFireflies) 
-			devmousemat_attr_matrix_brightness.store(device, NULL, testBrightness[i], strlen(testBrightness[i])-1);
-		for (struct device* device : deviceMugs) 
-			devmousemat_attr_matrix_brightness.store(device, NULL, testBrightness[i], strlen(testBrightness[i])-1);
-		for (struct device* device : deviceCores) 
-			devcore_attr_matrix_brightness.store(device, NULL, testBrightness[i], strlen(testBrightness[i])-1);
-		//for (struct device* device : deviceKrakens) 
-			//devkraken_attr_matrix_brightness.store(device, NULL, testBrightness[i], strlen(testBrightness[i])-1);
+
+			if (devices[dev_idx].logo_led_brightness)
+			{
+				devices[dev_idx].logo_led_brightness->store(devs[dev_idx], NULL, testBrightness[i], strlen(testBrightness[i]) - 1);
+			}
+
+			if (devices[dev_idx].scroll_led_brightness)
+			{
+				devices[dev_idx].scroll_led_brightness->store(devs[dev_idx], NULL, testBrightness[i], strlen(testBrightness[i]) - 1);
+			}
+
+			if (devices[dev_idx].left_led_brightness)
+			{
+				devices[dev_idx].left_led_brightness->store(devs[dev_idx], NULL, testBrightness[i], strlen(testBrightness[i]) - 1);
+			}
+
+			if (devices[dev_idx].right_led_brightness)
+			{
+				devices[dev_idx].right_led_brightness->store(devs[dev_idx], NULL, testBrightness[i], strlen(testBrightness[i]) - 1);
+			}
+		}
 	}
 
+	//Test none (off)
 	printf("Press enter to test none (turn everything off)...");
 	getc(stdin);
 	printf("\n");
 
-	for (struct device* device : deviceKeyboards) 
-		devkbd_attr_matrix_effect_none.store(device, NULL, 0, 0);
-	for (struct device* device : deviceMice)
-		switch ((to_usb_device(device))->descriptor.idProduct) {
-			case USB_DEVICE_ID_RAZER_DEATHADDER_ELITE:
-				devmouse_attr_logo_matrix_effect_none.store(device, NULL, 0, 0);
-				devmouse_attr_scroll_matrix_effect_none.store(device, NULL, 0, 0);
-				break;
-			default:
-				devmouse_attr_matrix_effect_none.store(device, NULL, 0, 0);
-				break;
-		}
-	for (struct device* device : deviceFireflies) 
-		devmousemat_attr_matrix_effect_none.store(device, NULL, 0, 0);
-	for (struct device* device : deviceMugs) 
-		devaccessory_attr_matrix_effect_none.store(device, NULL, 0, 0);
-	for (struct device* device : deviceCores) 
-		devcore_attr_matrix_effect_none.store(device, NULL, 0, 0);
-	for (struct device* device : deviceKrakens) 
-		devkraken_attr_matrix_effect_none.store(device, NULL, 0, 0);
+	for (int dev_idx = 0; dev_idx < devices.size(); dev_idx++)
+	{
+		if (devices[dev_idx].matrix_effect_none)
+		{
+			const char cmd[1] = { 0x00 };
 
+			devices[dev_idx].matrix_effect_none->store(devs[dev_idx], NULL, cmd, 1);
+		}
+
+		if (devices[dev_idx].logo_matrix_effect_none)
+		{
+			const char cmd[1] = { 0x00 };
+
+			devices[dev_idx].logo_matrix_effect_none->store(devs[dev_idx], NULL, cmd, 1);
+		}
+
+		if (devices[dev_idx].scroll_matrix_effect_none)
+		{
+			const char cmd[1] = { 0x00 };
+
+			devices[dev_idx].scroll_matrix_effect_none->store(devs[dev_idx], NULL, cmd, 1);
+		}
+
+		if (devices[dev_idx].left_matrix_effect_none)
+		{
+			const char cmd[1] = { 0x00 };
+
+			devices[dev_idx].left_matrix_effect_none->store(devs[dev_idx], NULL, cmd, 1);
+		}
+
+		if (devices[dev_idx].right_matrix_effect_none)
+		{
+			const char cmd[1] = { 0x00 };
+
+			devices[dev_idx].right_matrix_effect_none->store(devs[dev_idx], NULL, cmd, 1);
+		}
+	}
+
+	//Test spectrum
 	printf("Press enter to test spectrum effects...");
 	getc(stdin);
 	printf("\n");
 
-	for (struct device* device : deviceKeyboards) 
-		devkbd_attr_matrix_effect_spectrum.store(device, NULL, 0, 0);
-	for (struct device* device : deviceMice) 
-		switch ((to_usb_device(device))->descriptor.idProduct) {
-			case USB_DEVICE_ID_RAZER_DEATHADDER_ELITE:
-				devmouse_attr_logo_matrix_effect_spectrum.store(device, NULL, 0, 0);
-				devmouse_attr_scroll_matrix_effect_spectrum.store(device, NULL, 0, 0);
-				break;
-			default:
-				devmouse_attr_matrix_effect_spectrum.store(device, NULL, 0, 0);
-				break;
-		}
-	for (struct device* device : deviceFireflies) 
-		devmousemat_attr_matrix_effect_spectrum.store(device, NULL, 0, 0);
-	for (struct device* device : deviceMugs) 
-		devaccessory_attr_matrix_effect_spectrum.store(device, NULL, 0, 0);
-	for (struct device* device : deviceCores) 
-		devcore_attr_matrix_effect_spectrum.store(device, NULL, 0, 0);
-	for (struct device* device : deviceKrakens) 
-		devkraken_attr_matrix_effect_spectrum.store(device, NULL, 0, 0);
+	for (int dev_idx = 0; dev_idx < devices.size(); dev_idx++)
+	{
+		if (devices[dev_idx].matrix_effect_spectrum)
+		{
+			const char cmd[1] = { 0x00 };
 
+			devices[dev_idx].matrix_effect_spectrum->store(devs[dev_idx], NULL, cmd, 1);
+		}
+
+		if (devices[dev_idx].logo_matrix_effect_spectrum)
+		{
+			const char cmd[1] = { 0x00 };
+
+			devices[dev_idx].logo_matrix_effect_spectrum->store(devs[dev_idx], NULL, cmd, 1);
+		}
+
+		if (devices[dev_idx].scroll_matrix_effect_spectrum)
+		{
+			const char cmd[1] = { 0x00 };
+
+			devices[dev_idx].scroll_matrix_effect_spectrum->store(devs[dev_idx], NULL, cmd, 1);
+		}
+
+		if (devices[dev_idx].left_matrix_effect_spectrum)
+		{
+			const char cmd[1] = { 0x00 };
+
+			devices[dev_idx].left_matrix_effect_spectrum->store(devs[dev_idx], NULL, cmd, 1);
+		}
+
+		if (devices[dev_idx].right_matrix_effect_spectrum)
+		{
+			const char cmd[1] = { 0x00 };
+
+			devices[dev_idx].right_matrix_effect_spectrum->store(devs[dev_idx], NULL, cmd, 1);
+		}
+	}
+
+	//Test reactive
 	printf("Press enter to test reactive effects...");
 	getc(stdin);
 	printf("\n");
 
-	for (int i = 0; i < _countof(testReactive); i++) {
-		for (struct device* device : deviceKeyboards) 
-			devkbd_attr_matrix_effect_reactive.store(device, NULL, testReactive[i], 4);
-		for (struct device* device : deviceMice) 
-			switch ((to_usb_device(device))->descriptor.idProduct) {
-				case USB_DEVICE_ID_RAZER_DEATHADDER_ELITE:
-					devmouse_attr_logo_matrix_effect_reactive.store(device, NULL, testReactive[i], 4);
-					devmouse_attr_scroll_matrix_effect_reactive.store(device, NULL, testReactive[i], 4);
-					break;
-				default:
-					devmouse_attr_matrix_effect_reactive.store(device, NULL, testReactive[i], 4);
-					break;
-			}
-		for (struct device* device : deviceFireflies) 
-			devmousemat_attr_matrix_effect_reactive.store(device, NULL, testReactive[i], 4);
-		for (struct device* device : deviceCores) 
-			devcore_attr_matrix_effect_reactive.store(device, NULL, testReactive[i], 4);
+	for (int dev_idx = 0; dev_idx < devices.size(); dev_idx++)
+	{
+		if (devices[dev_idx].matrix_effect_reactive)
+		{
+			const char cmd[1] = { 0x00 };
 
-		printf("Speed %02X Color RGB(%02X,%02X,%02X) sent.  Press enter to test next color...",(unsigned char)testReactive[i][0], (unsigned char)testReactive[i][1], (unsigned char)testReactive[i][2], (unsigned char)testReactive[i][3]);
-		getc(stdin);
-		printf("\n");
+			devices[dev_idx].matrix_effect_reactive->store(devs[dev_idx], NULL, cmd, 1);
+		}
+
+		if (devices[dev_idx].logo_matrix_effect_reactive)
+		{
+			const char cmd[1] = { 0x00 };
+
+			devices[dev_idx].logo_matrix_effect_reactive->store(devs[dev_idx], NULL, cmd, 1);
+		}
+
+		if (devices[dev_idx].scroll_matrix_effect_reactive)
+		{
+			const char cmd[1] = { 0x00 };
+
+			devices[dev_idx].scroll_matrix_effect_reactive->store(devs[dev_idx], NULL, cmd, 1);
+		}
+
+		if (devices[dev_idx].left_matrix_effect_reactive)
+		{
+			const char cmd[1] = { 0x00 };
+
+			devices[dev_idx].left_matrix_effect_reactive->store(devs[dev_idx], NULL, cmd, 1);
+		}
+
+		if (devices[dev_idx].right_matrix_effect_reactive)
+		{
+			const char cmd[1] = { 0x00 };
+
+			devices[dev_idx].right_matrix_effect_reactive->store(devs[dev_idx], NULL, cmd, 1);
+		}
 	}
 
+	//Test static
 	printf("Press enter to test static effects (loop through 6 colors)...");
 	getc(stdin);
 	printf("\n");
 
-	for (int i = 0; i < _countof(testColor); i++) {
-		for (struct device* device : deviceKeyboards) 
-			staticEffect(device, testColor[i], devkbd_attr_matrix_effect_static);
-		for (struct device* device : deviceMice) 
-			switch ((to_usb_device(device))->descriptor.idProduct) {
-			//switch (device->parent->descriptor.idProduct) {
-				case USB_DEVICE_ID_RAZER_DEATHADDER_ELITE:
-					staticEffect(device, testColor[i], devmouse_attr_logo_matrix_effect_static);
-					staticEffect(device, testColor[i], devmouse_attr_scroll_matrix_effect_static);
-					break;
-				default:
-					staticEffect(device, testColor[i], devmouse_attr_matrix_effect_static);
+	for (int i = 0; i < _countof(testColor); i++)
+	{
+		for (int dev_idx = 0; dev_idx < devices.size(); dev_idx++)
+		{
+			if (devices[dev_idx].matrix_effect_static)
+			{
+				const char cmd[3] = { red(testColor[i]), green(testColor[i]), blue(testColor[i]) };
+
+				devices[dev_idx].matrix_effect_static->store(devs[dev_idx], NULL, cmd, 3);
 			}
-		for (struct device* device : deviceFireflies) 
-			staticEffect(device, testColor[i], devmousemat_attr_matrix_effect_static);
-		for (struct device* device : deviceMugs) 
-			staticEffect(device, testColor[i], devaccessory_attr_matrix_effect_static);
-		for (struct device* device : deviceCores) 
-			staticEffect(device, testColor[i], devcore_attr_matrix_effect_static);
-		for (struct device* device : deviceKrakens) 
-			staticEffect(device, testColor[i], devkraken_attr_matrix_effect_static);
+
+			if (devices[dev_idx].logo_matrix_effect_static)
+			{
+				const char cmd[3] = { red(testColor[i]), green(testColor[i]), blue(testColor[i]) };
+
+				devices[dev_idx].logo_matrix_effect_static->store(devs[dev_idx], NULL, cmd, 3);
+			}
+
+			if (devices[dev_idx].scroll_matrix_effect_static)
+			{
+				const char cmd[3] = { red(testColor[i]), green(testColor[i]), blue(testColor[i]) };
+
+				devices[dev_idx].scroll_matrix_effect_static->store(devs[dev_idx], NULL, cmd, 3);
+			}
+
+			if (devices[dev_idx].left_matrix_effect_static)
+			{
+				const char cmd[3] = { red(testColor[i]), green(testColor[i]), blue(testColor[i]) };
+
+				devices[dev_idx].left_matrix_effect_static->store(devs[dev_idx], NULL, cmd, 3);
+			}
+
+			if (devices[dev_idx].right_matrix_effect_static)
+			{
+				const char cmd[3] = { red(testColor[i]), green(testColor[i]), blue(testColor[i]) };
+
+				devices[dev_idx].right_matrix_effect_static->store(devs[dev_idx], NULL, cmd, 3);
+			}
+		}
+
 		printf("Color RGB(%02X,%02X,%02X) sent.  Press enter to test next color...",red(testColor[i]), green(testColor[i]), blue(testColor[i]));
 		getc(stdin);
 		printf("\n");
 	}
 
+	//Test custom
 	printf("Press enter to test custom effects...");
 	getc(stdin);
 	printf("\n");
 
 	for(int i = 0;i < 10;i++)
-	for (unsigned int offset = 0; offset < _countof(testColor); offset++) {
-		colorize(deviceKeyboards, 6, 25, offset, devkbd_attr_matrix_custom_frame, devkbd_attr_matrix_effect_custom);
-		colorize(deviceMice, 1, 25, offset, devmouse_attr_matrix_custom_frame, devmouse_attr_matrix_effect_custom);
-		colorize(deviceFireflies, 1, 15, offset, devmousemat_attr_matrix_custom_frame, devmousemat_attr_matrix_effect_custom);
-		colorize(deviceMugs, 1, 15, offset, devaccessory_attr_matrix_custom_frame, devaccessory_attr_matrix_effect_custom);
-		colorize(deviceCores, 1, 25, offset, devcore_attr_matrix_custom_frame, devcore_attr_matrix_effect_custom);
-		//colorize(deviceKrakens, 9, 5, offset, devkraken_attr_matrix_custom_frame, devkraken_attr_matrix_effect_custom);
-		Sleep(50);
+	{
+		for (unsigned int offset = 0; offset < _countof(testColor); offset++)
+		{
+
+		}
 	}
-
-	printf("Press enter to close everything...");
-	getc(stdin);
-	printf("\n");
-
-	for (struct device* dev : deviceKeyboards) close(dev);
-	for (struct device* dev : deviceMice) close(dev);
-	for (struct device* dev : deviceFireflies) close(dev);
-	for (struct device* dev : deviceMugs) close(dev);
-	for (struct device* dev : deviceCores) close(dev);
-	for (struct device* dev : deviceKrakens) close(dev);
 
 	printf("Press enter to exit...");
 	getc(stdin);

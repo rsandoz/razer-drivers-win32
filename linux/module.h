@@ -35,6 +35,8 @@ struct device {
 	void							*p;
 	const char						*init_name;
 	void							*driver_data;
+	unsigned int                    attr_count;
+	struct device_attribute	*       attr_list[64];
 struct usb_interface *parent_usb_interface;
 };
 
@@ -109,8 +111,18 @@ struct device_attribute {
 	ssize_t(*store)(struct device *dev, struct device_attribute *attr, const char *buf, size_t count);
 };
 
-inline int device_create_file(struct device *device, struct device_attribute *entry) {
-	printf("device_create_file %s\n", entry->name);
+inline int device_create_file(struct device *device, struct device_attribute *entry)
+{
+	if (device->attr_count < 64)
+	{
+		printf("device_create_file - Adding %s to list\n", entry->name);
+		device->attr_list[device->attr_count] = entry;
+		device->attr_count++;
+	}
+	else
+	{
+		printf("device_create_file - List is full\n");
+	}
 	return 0;
 }
 

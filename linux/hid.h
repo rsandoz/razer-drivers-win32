@@ -22,8 +22,12 @@
 #define HID_REQ_GET_REPORT              0x01
 #define HID_REQ_SET_REPORT				0x09
 
-#define USB_INTERFACE_PROTOCOL_KEYBOARD 1
-#define USB_INTERFACE_PROTOCOL_MOUSE    2
+//#define USB_INTERFACE_PROTOCOL_KEYBOARD 1
+//#define USB_INTERFACE_PROTOCOL_MOUSE    2
+
+//Hack to make detection work without having to install WinUSB on the correct interface
+#define USB_INTERFACE_PROTOCOL_KEYBOARD 0
+#define USB_INTERFACE_PROTOCOL_MOUSE    0
 
 static const GUID GUID_DEVINTERFACE = { 0xDEE824EF, 0x729B, 0x4A0E, 0x9C, 0x14, 0xB7, 0x11, 0x7D, 0x33, 0xA8, 0x17 };
 
@@ -345,10 +349,10 @@ inline void openChromaDevice(struct hid_device** hdev, unsigned int* numHdev, st
 			| Set the interface protocol for this device                |
 			| Get this information from the interface descriptor        |
 			\*---------------------------------------------------------*/
-			USB_INTERFACE_DESCRIPTOR interface_descriptor;
-			WinUsb_QueryInterfaceSettings(hWinUSBHandle, 0, &interface_descriptor);
+			//USB_INTERFACE_DESCRIPTOR interface_descriptor;
+			//WinUsb_QueryInterfaceSettings(hWinUSBHandle, 0, &interface_descriptor);
 
-			intf->cur_altsetting->desc.bInterfaceProtocol = interface_descriptor.bInterfaceProtocol;
+			intf->cur_altsetting->desc.bInterfaceProtocol = 0;// interface_descriptor.bInterfaceProtocol;
 
 			/*---------------------------------------------------------*\
 			| Allocate buffer for USB device structure                  |
@@ -369,6 +373,7 @@ inline void openChromaDevice(struct hid_device** hdev, unsigned int* numHdev, st
 			(*hdev)[*numHdev].dev.p = hWinUSBHandle;
 			(*hdev)[*numHdev].dev.parent_usb_interface = intf;
 			(*hdev)[*numHdev].dev.init_name = hdr.name;
+			(*hdev)[*numHdev].dev.attr_count = 0;
 
 			usbdevice->dev = &((*hdev)[*numHdev].dev);
 			intf->dev = &((*hdev)[*numHdev].dev);
