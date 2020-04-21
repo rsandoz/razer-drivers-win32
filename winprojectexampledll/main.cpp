@@ -56,13 +56,18 @@ typedef struct
 	struct device_attribute* right_matrix_effect_reactive;
 	struct device_attribute* right_matrix_effect_wave;
 
+	struct device_attribute* logo_led_effect;
+	struct device_attribute* logo_led_rgb;
+	struct device_attribute* logo_led_state;
+
 	struct device_attribute* scroll_led_effect;
 	struct device_attribute* scroll_led_rgb;
+	struct device_attribute* scroll_led_state;
 } device_fn_type;
 
 typedef struct
 {
-	struct device_attribute* dev_attr_list[40];
+	struct device_attribute* dev_attr_list[44];
 } device_fn_list_type;
 
 static const char* device_fn_names[] =
@@ -112,15 +117,20 @@ static const char* device_fn_names[] =
 	"right_matrix_effect_reactive",
 	"right_matrix_effect_wave",
 
+	"logo_led_effect",
+	"logo_led_rgb",
+	"logo_led_state",
+
 	"scroll_led_effect",
-	"scroll_led_rgb"
+	"scroll_led_rgb",
+	"scroll_led_state"
 };
 
 static void load_device_fn(device_fn_type* device_fn, device* dev)
 {
 	memset(device_fn, 0, sizeof(device_fn_type));
 
-	for (int table_idx = 0; table_idx < 40; table_idx++)
+	for (int table_idx = 0; table_idx < 44; table_idx++)
 	{
 		for (int list_idx = 0; list_idx < dev->attr_count; list_idx++)
 		{
@@ -507,6 +517,42 @@ int main(int argc, char** argv) {
 
 			devices[dev_idx].right_matrix_effect_static->store(devs[dev_idx], NULL, cmd, 3);
 		}
+
+		if (devices[dev_idx].logo_led_state)
+		{
+			const char state[1] = { '1' };
+
+			devices[dev_idx].logo_led_state->store(devs[dev_idx], NULL, state, 1);
+		}
+
+		if (devices[dev_idx].scroll_led_state)
+		{
+			const char state[1] = { '1' };
+
+			devices[dev_idx].scroll_led_state->store(devs[dev_idx], NULL, state, 1);
+		}
+
+		if (devices[dev_idx].logo_led_rgb && devices[dev_idx].logo_led_effect)
+		{
+			const char cmd[3] = { 0xFF, 0xFF, 0xFF };
+
+			devices[dev_idx].logo_led_rgb->store(devs[dev_idx], NULL, cmd, 3);
+
+			const char effect[1] = { '0' };
+
+			devices[dev_idx].logo_led_effect->store(devs[dev_idx], NULL, effect, 1);
+		}
+
+		if (devices[dev_idx].scroll_led_rgb && devices[dev_idx].scroll_led_effect)
+		{
+			const char cmd[3] = { 0xFF, 0xFF, 0xFF };
+
+			devices[dev_idx].scroll_led_rgb->store(devs[dev_idx], NULL, cmd, 3);
+
+			const char effect[1] = { '0' };
+
+			devices[dev_idx].scroll_led_effect->store(devs[dev_idx], NULL, effect, 1);
+		}
 	}
 
 	//Test brightness
@@ -586,6 +632,20 @@ int main(int argc, char** argv) {
 
 			devices[dev_idx].right_matrix_effect_none->store(devs[dev_idx], NULL, cmd, 1);
 		}
+
+		if (devices[dev_idx].logo_led_state)
+		{
+			const char state[1] = { '0' };
+
+			devices[dev_idx].logo_led_state->store(devs[dev_idx], NULL, state, 1);
+		}
+
+		if (devices[dev_idx].scroll_led_state)
+		{
+			const char state[1] = { '0' };
+
+			devices[dev_idx].scroll_led_state->store(devs[dev_idx], NULL, state, 1);
+		}
 	}
 
 	//Test spectrum
@@ -628,6 +688,28 @@ int main(int argc, char** argv) {
 			const char cmd[1] = { 0x00 };
 
 			devices[dev_idx].right_matrix_effect_spectrum->store(devs[dev_idx], NULL, cmd, 1);
+		}
+
+		if (devices[dev_idx].logo_led_state && devices[dev_idx].logo_led_effect)
+		{
+			const char state[1] = { '1' };
+
+			devices[dev_idx].logo_led_state->store(devs[dev_idx], NULL, state, 1);
+
+			const char effect[1] = { '4' };
+
+			devices[dev_idx].logo_led_effect->store(devs[dev_idx], NULL, effect, 1);
+		}
+
+		if (devices[dev_idx].scroll_led_state && devices[dev_idx].scroll_led_effect)
+		{
+			const char state[1] = { '1' };
+
+			devices[dev_idx].scroll_led_state->store(devs[dev_idx], NULL, state, 1);
+
+			const char effect[1] = { '4' };
+
+			devices[dev_idx].scroll_led_effect->store(devs[dev_idx], NULL, effect, 1);
 		}
 	}
 
@@ -716,6 +798,28 @@ int main(int argc, char** argv) {
 				const char cmd[3] = { red(testColor[i]), green(testColor[i]), blue(testColor[i]) };
 
 				devices[dev_idx].right_matrix_effect_static->store(devs[dev_idx], NULL, cmd, 3);
+			}
+
+			if (devices[dev_idx].logo_led_rgb && devices[dev_idx].logo_led_effect)
+			{
+				const char effect[1] = { '0' };
+
+				devices[dev_idx].logo_led_effect->store(devs[dev_idx], NULL, effect, 1);
+
+				const char cmd[3] = { red(testColor[i]), green(testColor[i]), blue(testColor[i]) };
+
+				devices[dev_idx].logo_led_rgb->store(devs[dev_idx], NULL, cmd, 3);
+			}
+
+			if (devices[dev_idx].scroll_led_rgb && devices[dev_idx].scroll_led_effect)
+			{
+				const char effect[1] = { '0' };
+
+				devices[dev_idx].scroll_led_effect->store(devs[dev_idx], NULL, effect, 1);
+
+				const char cmd[3] = { red(testColor[i]), green(testColor[i]), blue(testColor[i]) };
+
+				devices[dev_idx].scroll_led_rgb->store(devs[dev_idx], NULL, cmd, 3);
 			}
 		}
 
