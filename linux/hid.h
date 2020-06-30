@@ -203,10 +203,11 @@ inline void openChromaDevice(struct hid_device** hdev, unsigned int* numHdev, st
 		\*-------------------------------------------------------------*/
 		while (info)
 		{
-			if((info->vendor_id ==  hdr.id_table[i].vendor)
+			if((info->vendor_id  == hdr.id_table[i].vendor)
 			&& (info->product_id == hdr.id_table[i].product)
 			&& (info->usage_page == 0x0001)
-			&& (info->usage      == 0x0002))
+			&& ((info->usage     == 0x0002)
+			 || (info->usage     == 0x0003)))
 			{
 				/*---------------------------------------------------------*\
 				| Open a handle to the device                               |
