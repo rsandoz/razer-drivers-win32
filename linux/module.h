@@ -2,7 +2,7 @@
 #define MODULE_H_
 
 #include <stdio.h>
-#include <Winusb.h>
+#include <hidapi/hidapi.h>
 
 #define MODULE_AUTHOR( __Declaration__ )
 #define MODULE_DESCRIPTION( __Declaration__ )
@@ -57,36 +57,106 @@ struct usb_device {
     struct usb_device_descriptor descriptor;
 };
 
-inline int usb_control_msg(
-	struct usb_device *usb_dev
-	, int usb_pipe
-	, unsigned int request
-	, unsigned int request_type
-	, unsigned int value
-	, unsigned int report_index
-	, unsigned char* buf, unsigned int size
-	, unsigned int timeout)
+/*---------------------------------------------------------*\
+| Implementation of usb_control_msg using hidapi			|
+\*---------------------------------------------------------*/
+inline int usb_control_msg
+	(
+	struct usb_device *usb_dev,
+	int				   usb_pipe,
+	unsigned int	   request,
+	unsigned int       request_type,
+	unsigned int       value,
+	unsigned int       report_index,
+	unsigned char*     buf,
+	unsigned int       size,
+	unsigned int       timeout
+	)
 {
 	/*---------------------------------------------------------*\
-	| Copy Linux API arguments into WinUSB format message       |
+	| Check request type to determine if we're reading or		|
+	| writing the feature report								|
 	\*---------------------------------------------------------*/
-	WINUSB_SETUP_PACKET packet;
-	packet.RequestType = request_type;
-	packet.Request = request;
-	packet.Value = value;
-	packet.Index = report_index; 
-	packet.Length = size;
-	ULONG cbSent = 0;
-
-	/*---------------------------------------------------------*\
-	| Perform WinUSB USB control transfer                       |
-	\*---------------------------------------------------------*/
-	if (!WinUsb_ControlTransfer(usb_dev->dev->p, packet, buf, size, &cbSent, 0))
+	if(size == 37)
 	{
-		printf("WinUsb_ControlTransfer failed\n");
+		if ((request_type & USB_DIR_IN) == USB_DIR_IN)
+		{
+			return(hid_get_feature_report((hidapi_device*)usb_dev->dev->p, buf, size));
+		}
+		else
+		{
+			return(hid_send_feature_report((hidapi_device*)usb_dev->dev->p, buf, size));
+		}
 	}
+	/*---------------------------------------------------------*\
+	| Check request type to determine if we're reading or		|
+	| writing the feature report								|
+	\*---------------------------------------------------------*/
+	else if ((request_type & USB_DIR_IN) == USB_DIR_IN)
+	{
+		/*---------------------------------------------------------*\
+		| Create a buffer to receive report with index              |
+		\*---------------------------------------------------------*/
+		int			  cbRecvd = 0;
+		unsigned char pkt[91];
 
-	return cbSent;
+		/*---------------------------------------------------------*\
+		| Set the report index										|
+		\*---------------------------------------------------------*/
+		pkt[0] = report_index;
+
+		/*---------------------------------------------------------*\
+		| Get the feature report.  Add one to the size to account   |
+		| for the report index										|
+		\*---------------------------------------------------------*/
+		cbRecvd = hid_get_feature_report((hidapi_device*)usb_dev->dev->p, pkt, size + 1);
+
+		/*---------------------------------------------------------*\
+		| For some reason, cbRecvd is sometimes 1 greater than size |
+		| + 1.  Limit the return value.                             |
+		\*---------------------------------------------------------*/
+		if(cbRecvd > size + 1)
+		{
+			cbRecvd = size + 1;
+		}
+
+		/*---------------------------------------------------------*\
+		| Copy the received report into the buffer                  |
+		\*---------------------------------------------------------*/
+		memcpy(buf, &pkt[1], size);
+
+		/*---------------------------------------------------------*\
+		| Return the number of bytes received, not including the    |
+		| report index												|
+		\*---------------------------------------------------------*/
+		return(cbRecvd - 1);
+	}
+	else
+	{
+		/*---------------------------------------------------------*\
+		| Create a buffer to send report with index					|
+		\*---------------------------------------------------------*/
+		int			  cbSent = 0;
+		unsigned char pkt[91];
+
+		/*---------------------------------------------------------*\
+		| Set the report index and copy the report into the buffer  |
+		\*---------------------------------------------------------*/
+		pkt[0] = report_index;
+		memcpy(&pkt[1], buf, size);
+
+		/*---------------------------------------------------------*\
+		| Send the feature report.  Add one to the size to account  |
+		| for the report index										|
+		\*---------------------------------------------------------*/
+		cbSent = hid_send_feature_report((hidapi_device*)usb_dev->dev->p, pkt, size + 1);
+
+		/*---------------------------------------------------------*\
+		| Return the number of bytes sent, not including the		|
+		| report index												|
+		\*---------------------------------------------------------*/
+		return cbSent - 1;
+	}
 }
 
 inline struct usb_interface *to_usb_interface(struct device *dev) {
