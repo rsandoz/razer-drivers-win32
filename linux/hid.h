@@ -185,6 +185,33 @@ inline void close(struct device* dev) {
 }
 
 /*---------------------------------------------------------*\
+| Tests if PID is from a kraken                             |
+\*---------------------------------------------------------*/
+inline bool is_kraken(unsigned short pid)
+{
+	// Codename Unknown
+	#define USB_DEVICE_ID_RAZER_KRAKEN_CLASSIC 0x0501
+	// Codename Rainie
+	#define USB_DEVICE_ID_RAZER_KRAKEN 0x0504
+	// Codename Unknown
+	#define USB_DEVICE_ID_RAZER_KRAKEN_CLASSIC_ALT 0x0506
+	// Codename Kylie
+	#define USB_DEVICE_ID_RAZER_KRAKEN_V2 0x0510
+	
+	switch (pid)
+	{
+	case USB_DEVICE_ID_RAZER_KRAKEN_CLASSIC:
+	case USB_DEVICE_ID_RAZER_KRAKEN:
+	case USB_DEVICE_ID_RAZER_KRAKEN_CLASSIC_ALT:
+	case USB_DEVICE_ID_RAZER_KRAKEN_V2:
+		return true;
+
+	default:
+		return false;
+	}
+}
+
+/*---------------------------------------------------------*\
 | Function to open a device using hidapi                    |
 \*---------------------------------------------------------*/
 inline void openChromaDevice(struct hid_device** hdev, unsigned int* numHdev, struct hid_driver hdr)
@@ -203,11 +230,19 @@ inline void openChromaDevice(struct hid_device** hdev, unsigned int* numHdev, st
 		\*-------------------------------------------------------------*/
 		while (info)
 		{
+			/*-------------------------------------------------------------*\
+			| Open the device.  Regular Razer devices use usage page 01     |
+			| and either usage 02 or 03.  Razer Kraken devices use usage    |
+			| page 0C and usage 03											|
+			\*-------------------------------------------------------------*/
 			if((info->vendor_id  == hdr.id_table[i].vendor)
 			&& (info->product_id == hdr.id_table[i].product)
-			&& (info->usage_page == 0x0001)
-			&& ((info->usage     == 0x0002)
-			 || (info->usage     == 0x0003)))
+			&& ( ((is_kraken(hdr.id_table[i].product)
+				 && (info->usage_page == 0x000C)
+				 && (info->usage == 0x0001)))
+			 || ((info->usage_page == 0x0001)
+				 && ((info->usage     == 0x0002)
+			      || (info->usage     == 0x0003)))))
 			{
 				/*---------------------------------------------------------*\
 				| Open a handle to the device                               |

@@ -74,18 +74,17 @@ inline int usb_control_msg
 	)
 {
 	/*---------------------------------------------------------*\
-	| Check request type to determine if we're reading or		|
-	| writing the feature report								|
+	| Kraken uses hid_write                                     |
 	\*---------------------------------------------------------*/
 	if(size == 37)
 	{
 		if ((request_type & USB_DIR_IN) == USB_DIR_IN)
 		{
-			return(hid_get_feature_report((hidapi_device*)usb_dev->dev->p, buf, size));
+			return(hid_read((hidapi_device*)usb_dev->dev->p, buf, size));
 		}
 		else
 		{
-			return(hid_send_feature_report((hidapi_device*)usb_dev->dev->p, buf, size));
+			return(hid_write((hidapi_device*)usb_dev->dev->p, buf, size));
 		}
 	}
 	/*---------------------------------------------------------*\
