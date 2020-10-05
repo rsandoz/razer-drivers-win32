@@ -24,6 +24,7 @@
 
 struct usb_interface_descriptor {
     unsigned char  bInterfaceProtocol;
+	unsigned char  bInterfaceSubClass;
 };
 
 struct usb_host_interface {

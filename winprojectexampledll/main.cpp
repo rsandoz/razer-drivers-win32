@@ -244,11 +244,9 @@ int main(int argc, char** argv)
     typedef unsigned int(*INITRAZERDRIVER)(struct hid_device** hdev);
 
     INITRAZERDRIVER init_razer_kbd_driver		= reinterpret_cast<INITRAZERDRIVER>(GetProcAddress(chromaLinuxModule, "init_razer_kbd_driver"));
-    INITRAZERDRIVER init_razer_mousemat_driver	= reinterpret_cast<INITRAZERDRIVER>(GetProcAddress(chromaLinuxModule, "init_razer_mousemat_driver"));
     INITRAZERDRIVER init_razer_mouse_driver		= reinterpret_cast<INITRAZERDRIVER>(GetProcAddress(chromaLinuxModule, "init_razer_mouse_driver"));
     INITRAZERDRIVER init_razer_accessory_driver = reinterpret_cast<INITRAZERDRIVER>(GetProcAddress(chromaLinuxModule, "init_razer_accessory_driver"));
     INITRAZERDRIVER init_razer_kraken_driver	= reinterpret_cast<INITRAZERDRIVER>(GetProcAddress(chromaLinuxModule, "init_razer_kraken_driver"));
-    INITRAZERDRIVER init_razer_core_driver		= reinterpret_cast<INITRAZERDRIVER>(GetProcAddress(chromaLinuxModule, "init_razer_core_driver"));
 
     /*---------------------------------------------------------*\
     | Initialize all OpenRazer driver modules and store devices |
@@ -261,16 +259,6 @@ int main(int argc, char** argv)
     std::vector<device*> devs;
     std::vector<device_fn_type> devices;
     unsigned int num;
-
-    hdev = NULL;
-    num = init_razer_mousemat_driver(&hdev);
-    for (unsigned int i = 0; i < num; i++)
-    {
-        device_fn_type new_dev;
-        load_device_fn(&new_dev, &hdev[i].dev);
-        devs.push_back(&hdev[i].dev);
-        devices.push_back(new_dev);
-    }
 
     hdev = NULL;
     num = init_razer_kbd_driver(&hdev);
@@ -294,16 +282,6 @@ int main(int argc, char** argv)
 
     hdev = NULL;
     num = init_razer_accessory_driver(&hdev);
-    for (unsigned int i = 0; i < num; i++)
-    {
-        device_fn_type new_dev;
-        load_device_fn(&new_dev, &hdev[i].dev);
-        devs.push_back(&hdev[i].dev);
-        devices.push_back(new_dev);
-    }
-
-    hdev = NULL;
-    num = init_razer_core_driver(&hdev);
     for (unsigned int i = 0; i < num; i++)
     {
         device_fn_type new_dev;

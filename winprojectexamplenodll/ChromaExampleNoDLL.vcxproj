@@ -132,10 +132,8 @@
     <ClCompile Include="..\openrazer\driver\razeraccessory_driver.c" />
     <ClCompile Include="..\openrazer\driver\razerchromacommon.c" />
     <ClCompile Include="..\openrazer\driver\razercommon.c" />
-    <ClCompile Include="..\openrazer\driver\razercore_driver.c" />
     <ClCompile Include="..\openrazer\driver\razerkbd_driver.c" />
     <ClCompile Include="..\openrazer\driver\razerkraken_driver.c" />
-    <ClCompile Include="..\openrazer\driver\razermousemat_driver.c" />
     <ClCompile Include="..\openrazer\driver\razermouse_driver.c" />
     <ClCompile Include="..\winprojectexampledll\main.cpp" />
   </ItemGroup>
@@ -151,10 +149,8 @@
     <ClInclude Include="..\openrazer\driver\razeraccessory_driver.h" />
     <ClInclude Include="..\openrazer\driver\razerchromacommon.h" />
     <ClInclude Include="..\openrazer\driver\razercommon.h" />
-    <ClInclude Include="..\openrazer\driver\razercore_driver.h" />
     <ClInclude Include="..\openrazer\driver\razerkbd_driver.h" />
     <ClInclude Include="..\openrazer\driver\razerkraken_driver.h" />
-    <ClInclude Include="..\openrazer\driver\razermousemat_driver.h" />
     <ClInclude Include="..\openrazer\driver\razermouse_driver.h" />
     <ClInclude Include="defines.h" />
   </ItemGroup>
