@@ -16,8 +16,15 @@
 
 #define HID_GD_WHEEL					0x00010038
 
+#define HID_UP_GENDESK		0x00010000
+#define HID_UP_BUTTON		0x00090000
+
 #define HID_REQ_GET_REPORT              0x01
 #define HID_REQ_SET_REPORT				0x09
+
+#define MSC_SCAN		0x04
+
+#define REL_HWHEEL		0x06
 
 //#define USB_INTERFACE_PROTOCOL_KEYBOARD 1
 //#define USB_INTERFACE_PROTOCOL_MOUSE    2
@@ -40,6 +47,7 @@ struct hid_input {
 };
 
 struct hid_field {
+	unsigned  application;		/* application usage for this field */
 	struct hid_input *hidinput;     /* associated input structure */
 };
 
@@ -52,6 +60,7 @@ struct hid_usage {
 struct hid_driver {
 	char *name;
 	const struct hid_device_id *id_table;
+	bool (*match)(struct hid_device* dev, bool ignore_special_driver);
 	int (*probe)(struct hid_device *dev, const struct hid_device_id *id);
 	void (*remove)(struct hid_device *dev);
 	int (*raw_event)(struct hid_device *hdev, struct hid_report *report, u8 *data, int size);

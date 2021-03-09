@@ -152,6 +152,7 @@
   <ItemGroup>
     <ClInclude Include="linux\dmi.h" />
     <ClInclude Include="linux\hid.h" />
+    <ClInclude Include="linux\hrtimer.h" />
     <ClInclude Include="linux\init.h" />
     <ClInclude Include="linux\kernel.h" />
     <ClInclude Include="linux\module.h" />

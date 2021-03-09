@@ -3,12 +3,20 @@
 
 #include <windows.h>
 
+#define ARRAY_SIZE(array) \
+    (sizeof(array) / sizeof(*array))
+
 #define DLL_INTERNAL __declspec( dllexport )
 
 #define u8 unsigned char
 #define u16 unsigned short
 #define u32 unsigned int
 #define u64 unsigned long
+
+#define s8 char
+#define s16 short
+#define s32 int
+#define s64 long
 
 #define __u8 unsigned char
 #define __u16 unsigned short
@@ -95,4 +103,26 @@ inline int test_bit(int nr, const void *addr) {
         return ((mask & *a) != 0);
 }
 
+inline int kstrtouint(const char* s,
+    unsigned int base,
+    unsigned int* res)
+{
+    return 0;
+}
+
+static inline void input_report_rel(struct input_dev* dev, unsigned int code, int value)
+{
+    
+}
+
+inline struct usb_interface* usb_ifnum_to_if(const struct usb_device* dev,
+    unsigned ifnum)
+{
+    return NULL;
+}
+
+inline void input_set_capability(struct input_dev* dev, unsigned int type, unsigned int code)
+{
+
+}
 #endif /* KERNEL_H_ */

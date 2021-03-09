@@ -23,6 +23,7 @@
 #define PATH_MAX 512
 
 struct usb_interface_descriptor {
+	unsigned char  bInterfaceNumber;
     unsigned char  bInterfaceProtocol;
 	unsigned char  bInterfaceSubClass;
 };
@@ -35,6 +36,7 @@ struct device {
 	struct device					*parent;
 	void							*p;
 	const char						*init_name;
+	struct bus_type*				bus;
 	void							*driver_data;
 	unsigned int                    attr_count;
 	struct device_attribute	*       attr_list[64];
@@ -53,9 +55,26 @@ struct usb_device_descriptor {
     unsigned short idProduct;
 };
 
+struct usb_config_descriptor {
+	u8  bLength;
+	u8  bDescriptorType;
+
+	u16 wTotalLength;
+	u8  bNumInterfaces;
+	u8  bConfigurationValue;
+	u8  iConfiguration;
+	u8  bmAttributes;
+	u8  bMaxPower;
+};
+
+struct usb_host_config {
+	struct usb_config_descriptor	desc;
+};
+
 struct usb_device {
 	struct device* dev;
     struct usb_device_descriptor descriptor;
+	struct usb_host_config* actconfig;
 };
 
 /*---------------------------------------------------------*\
