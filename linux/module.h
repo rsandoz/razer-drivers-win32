@@ -2,10 +2,11 @@
 #define MODULE_H_
 
 #include <stdio.h>
-#include <Winusb.h>
+#include <hidapi/hidapi.h>
 
 #define MODULE_AUTHOR( __Declaration__ )
 #define MODULE_DESCRIPTION( __Declaration__ )
+#define MODULE_VERSION( __Declaration__ )
 #define MODULE_LICENSE( __Declaration__ )
 
 #define USB_CTRL_SET_TIMEOUT    5000
@@ -22,7 +23,9 @@
 #define PATH_MAX 512
 
 struct usb_interface_descriptor {
+	unsigned char  bInterfaceNumber;
     unsigned char  bInterfaceProtocol;
+	unsigned char  bInterfaceSubClass;
 };
 
 struct usb_host_interface {
@@ -33,7 +36,10 @@ struct device {
 	struct device					*parent;
 	void							*p;
 	const char						*init_name;
+	struct bus_type*				bus;
 	void							*driver_data;
+	unsigned int                    attr_count;
+	struct device_attribute	*       attr_list[64];
 struct usb_interface *parent_usb_interface;
 };
 
@@ -49,35 +55,128 @@ struct usb_device_descriptor {
     unsigned short idProduct;
 };
 
+struct usb_config_descriptor {
+	u8  bLength;
+	u8  bDescriptorType;
+
+	u16 wTotalLength;
+	u8  bNumInterfaces;
+	u8  bConfigurationValue;
+	u8  iConfiguration;
+	u8  bmAttributes;
+	u8  bMaxPower;
+};
+
+struct usb_host_config {
+	struct usb_config_descriptor	desc;
+};
+
 struct usb_device {
 	struct device* dev;
     struct usb_device_descriptor descriptor;
+	struct usb_host_config* actconfig;
 };
 
-inline int usb_control_msg(
-	struct usb_device *usb_dev
-	, int usb_pipe
-	, unsigned int request
-	, unsigned int request_type
-	, unsigned int value
-	, unsigned int report_index
-	, unsigned char* buf, unsigned int size
-	, unsigned int timeout)
+/*---------------------------------------------------------*\
+| Implementation of usb_control_msg using hidapi			|
+\*---------------------------------------------------------*/
+inline int usb_control_msg
+	(
+	struct usb_device *usb_dev,
+	int				   usb_pipe,
+	unsigned int	   request,
+	unsigned int       request_type,
+	unsigned int       value,
+	unsigned int       report_index,
+	unsigned char*     buf,
+	unsigned int       size,
+	unsigned int       timeout
+	)
 {
-	WINUSB_SETUP_PACKET packet;
-	packet.RequestType = request_type;
-	packet.Request = request;
-	packet.Value = value;
-	packet.Index = report_index; 
-	packet.Length = size;
-	ULONG cbSent = 0;
-	if (!WinUsb_ControlTransfer(usb_dev->dev->p, packet, buf, size, &cbSent, 0))
-		printf("WinUsb_ControlTransfer failed\n");
+	/*---------------------------------------------------------*\
+	| Kraken uses hid_write                                     |
+	\*---------------------------------------------------------*/
+	if(size == 37)
+	{
+		if ((request_type & USB_DIR_IN) == USB_DIR_IN)
+		{
+			return(hid_read((hidapi_device*)usb_dev->dev->p, buf, size));
+		}
+		else
+		{
+			return(hid_write((hidapi_device*)usb_dev->dev->p, buf, size));
+		}
+	}
+	/*---------------------------------------------------------*\
+	| Check request type to determine if we're reading or		|
+	| writing the feature report								|
+	\*---------------------------------------------------------*/
+	else if ((request_type & USB_DIR_IN) == USB_DIR_IN)
+	{
+		/*---------------------------------------------------------*\
+		| Create a buffer to receive report with index              |
+		\*---------------------------------------------------------*/
+		int			  cbRecvd = 0;
+		unsigned char pkt[91];
 
-	return cbSent;
+		/*---------------------------------------------------------*\
+		| Set the report index										|
+		\*---------------------------------------------------------*/
+		pkt[0] = report_index;
+
+		/*---------------------------------------------------------*\
+		| Get the feature report.  Add one to the size to account   |
+		| for the report index										|
+		\*---------------------------------------------------------*/
+		cbRecvd = hid_get_feature_report((hidapi_device*)usb_dev->dev->p, pkt, size + 1);
+
+		/*---------------------------------------------------------*\
+		| For some reason, cbRecvd is sometimes 1 greater than size |
+		| + 1.  Limit the return value.                             |
+		\*---------------------------------------------------------*/
+		if(cbRecvd > size + 1)
+		{
+			cbRecvd = size + 1;
+		}
+
+		/*---------------------------------------------------------*\
+		| Copy the received report into the buffer                  |
+		\*---------------------------------------------------------*/
+		memcpy(buf, &pkt[1], size);
+
+		/*---------------------------------------------------------*\
+		| Return the number of bytes received, not including the    |
+		| report index												|
+		\*---------------------------------------------------------*/
+		return(cbRecvd - 1);
+	}
+	else
+	{
+		/*---------------------------------------------------------*\
+		| Create a buffer to send report with index					|
+		\*---------------------------------------------------------*/
+		int			  cbSent = 0;
+		unsigned char pkt[91];
+
+		/*---------------------------------------------------------*\
+		| Set the report index and copy the report into the buffer  |
+		\*---------------------------------------------------------*/
+		pkt[0] = report_index;
+		memcpy(&pkt[1], buf, size);
+
+		/*---------------------------------------------------------*\
+		| Send the feature report.  Add one to the size to account  |
+		| for the report index										|
+		\*---------------------------------------------------------*/
+		cbSent = hid_send_feature_report((hidapi_device*)usb_dev->dev->p, pkt, size + 1);
+
+		/*---------------------------------------------------------*\
+		| Return the number of bytes sent, not including the		|
+		| report index												|
+		\*---------------------------------------------------------*/
+		return cbSent - 1;
+	}
 }
-
-
 
 inline struct usb_interface *to_usb_interface(struct device *dev) {
 	return dev->parent_usb_interface;
@@ -101,8 +200,18 @@ struct device_attribute {
 	ssize_t(*store)(struct device *dev, struct device_attribute *attr, const char *buf, size_t count);
 };
 
-inline int device_create_file(struct device *device, struct device_attribute *entry) {
-	printf("device_create_file %s\n", entry->name);
+inline int device_create_file(struct device *device, struct device_attribute *entry)
+{
+	if (device->attr_count < 64)
+	{
+		printf("device_create_file - Adding %s to list\n", entry->name);
+		device->attr_list[device->attr_count] = entry;
+		device->attr_count++;
+	}
+	else
+	{
+		printf("device_create_file - List is full\n");
+	}
 	return 0;
 }
 
@@ -119,7 +228,11 @@ inline void device_remove_file(struct device *device, struct device_attribute *e
 
 // Hack to turn Linux device macros into API calls
 #define DEVICE_ATTR1(_device,_name, _mode, _show, _store)	\
-	struct device_attribute dev_attr_##_name; \
+	struct device_attribute dev_attr_##_name = { \
+		  .name = __stringify(_name)                \
+        , .show   = _show                           \
+        , .store  = _store                          \
+    };                                              \
 	DLL_INTERNAL struct device_attribute dev##_device##_attr_##_name = {	\
           .name = __stringify(_name)				\
         , .show   = _show							\

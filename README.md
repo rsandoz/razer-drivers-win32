@@ -1,23 +1,19 @@
-# ChromaDLL
+# OpenRazer-Win32
 
-Open ChromaDLL.sln in VS2015
-Build appropriate version (64 bit debug version is default)
+Control Razer devices on Windows without Synapse or Chroma SDK using the open source OpenRazer driver.  This project provides wrapper files that fill in for the Linux kernel headers and convert OpenRazer into a Windows DLL.
 
-Obtain the Zadig USB driver tool (to automate driver installation)
+### Building
 
-Start Zadig.
+Open OpenRazer.sln in the latest version of Visual Studio.  I use VS2019 Community Edition.
 
-Select Options->List all devices (This queries all of the USB devices connected to your system)
+Build the desired OpenRazer-Win32 version.  There are also two example apps provided.  64 bit debug version is default.
 
-The dropdown should now contain devices starting with "Razer..."  Select one of you Razer devices and select the last interface in the group.
-Example:
-Razer DeathAdder Elite (Interface 0)
-Razer DeathAdder Elite (Interface 1)
-Razer DeathAdder Elite (Interface 2)-> Select this one for instance
+### Using
 
-Select "WinUSB (v6.1.7600.16385)" in the Driver field
-then select "Install Driver" from the DropDown Button, then press the button "Replace Driver"
-
-This will install the WinUSB driver on that interface.  Don't pick interface 0 or interface 1 as those are utilized by the OS's HID driver for normal keyboard and mouse operations.
+Previous versions of this library used the WinUSB driver.  It does not use this driver anymore, so please uninstall the WinUSB driver from any devices you may have installed it on before using this library.
 
 This project contains a main.cpp file which tests the various Chroma API calls on all Chroma devices found.
+
+This project is only a software library with a crude demonstration app.  If you are a user who wants to control your Razer devices without Synapse, check out my OpenRGB project which uses this library:
+
+https://gitlab.com/CalcProgrammer1/OpenRGB
